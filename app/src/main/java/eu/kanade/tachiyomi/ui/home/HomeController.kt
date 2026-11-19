@@ -37,9 +37,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.platform.setContent
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.LayoutDirection
@@ -89,7 +89,7 @@ class HomeController : BaseController<HomeControllerBinding>(), RootSearchInterf
 
     override fun onViewCreated(view: View) {
         super.onViewCreated(view)
-        binding.homeCompose.setContent {
+        (binding.homeCompose as ComposeView).setContent {
             EnhancedReadingTheme {
                 HomeDashboard(
                     library = libraryManga,
