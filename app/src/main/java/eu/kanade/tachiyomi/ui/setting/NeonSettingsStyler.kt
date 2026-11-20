@@ -32,11 +32,11 @@ internal class NeonSettingsStyler(
     private val mainMenu: Boolean,
 ) {
     private val density = list.resources.displayMetrics.density
-    private val cyan = Color.rgb(72, 221, 242)
-    private val blue = Color.rgb(88, 124, 255)
-    private val purple = Color.rgb(155, 105, 255)
-    private val pink = Color.rgb(255, 79, 163)
-    private val secondary = Color.rgb(167, 180, 200)
+    private val cyan = Color.rgb(49, 228, 255)
+    private val blue = Color.rgb(77, 128, 255)
+    private val purple = Color.rgb(169, 77, 255)
+    private val pink = Color.rgb(255, 50, 203)
+    private val secondary = Color.rgb(185, 178, 208)
 
     private val spacing = object : RecyclerView.ItemDecoration() {
         override fun getItemOffsets(
@@ -64,7 +64,7 @@ internal class NeonSettingsStyler(
 
     init {
         list.background = GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, intArrayOf(
-            Color.rgb(12, 20, 38), Color.rgb(7, 11, 22), Color.rgb(16, 13, 31),
+            Color.rgb(16, 11, 37), Color.rgb(5, 5, 13), Color.rgb(23, 10, 36),
         ))
         list.clipToPadding = false
         list.addItemDecoration(spacing)
@@ -93,7 +93,7 @@ internal class NeonSettingsStyler(
         view.background = if (category || !preference.isSelectable || !preference.isEnabled) {
             background
         } else {
-            RippleDrawable(ColorStateList.valueOf(Color.argb(75, 72, 221, 242)), background, null)
+            RippleDrawable(ColorStateList.valueOf(Color.argb(96, 49, 228, 255)), background, null)
         }
         if (!category) view.minimumHeight = maxOf(view.minimumHeight, dp(56))
 
@@ -113,13 +113,13 @@ internal class NeonSettingsStyler(
             val checked = intArrayOf(android.R.attr.state_checked)
             val other = intArrayOf()
             thumbTintList = ColorStateList(arrayOf(checked, other), intArrayOf(Color.WHITE, secondary))
-            trackTintList = ColorStateList(arrayOf(checked, other), intArrayOf(purple, Color.rgb(36, 55, 77)))
+            trackTintList = ColorStateList(arrayOf(checked, other), intArrayOf(purple, Color.rgb(41, 35, 68)))
         }
         view.findViewById<Slider>(R.id.slider)?.apply {
             trackActiveTintList = ColorStateList.valueOf(cyan)
-            trackInactiveTintList = ColorStateList.valueOf(Color.rgb(56, 71, 101))
+            trackInactiveTintList = ColorStateList.valueOf(Color.rgb(66, 54, 100))
             thumbTintList = ColorStateList.valueOf(pink)
-            haloTintList = ColorStateList.valueOf(Color.argb(68, 239, 45, 211))
+            haloTintList = ColorStateList.valueOf(Color.argb(88, 255, 50, 203))
         }
     }
 
@@ -128,7 +128,7 @@ internal class NeonSettingsStyler(
         private val category: Boolean,
     ) : Drawable() {
         private val backgroundPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = Color.rgb(16, 26, 44)
+            color = Color.rgb(15, 17, 34)
         }
         private val borderPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
             style = Paint.Style.STROKE

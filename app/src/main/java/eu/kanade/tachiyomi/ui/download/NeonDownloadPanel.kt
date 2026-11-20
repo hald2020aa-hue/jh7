@@ -78,12 +78,12 @@ data class NeonDownloadRow(
     val completedInCache: Int,
 )
 
-private val background = Color(0xFF070B16)
-private val panel = Color(0xFF101A2C)
-private val foreground = Color(0xFFF4F7FF)
-private val muted = Color(0xFFA7B4C8)
-private val cyan = Color(0xFF48DDF2)
-private val pink = Color(0xFFFF4FA3)
+private val background = Color(0xFF05050D)
+private val panel = Color(0xFF0F1122)
+private val foreground = Color(0xFFFBF7FF)
+private val muted = Color(0xFFB9B2D0)
+private val cyan = Color(0xFF31E4FF)
+private val pink = Color(0xFFFF32CB)
 private val palettes = listOf(
     listOf(Color(0xFF04D5E6), Color(0xFF2275FC), Color(0xFF983BEC), Color(0xFFF11DBF)),
     listOf(Color(0xFFFF4265), Color(0xFFE11DA6), Color(0xFF9655F2)),
@@ -108,7 +108,7 @@ private fun NeonProgressTrack(value: Float, colors: List<Color>, modifier: Modif
     val fraction = value.coerceIn(0f, 1f)
     Box(
         modifier = modifier.fillMaxWidth().height(14.dp).clip(RoundedCornerShape(20.dp))
-            .background(Color(0xFF24374D)),
+            .background(Color(0xFF292344)),
     ) {
         Box(
             Modifier.fillMaxWidth(fraction).height(14.dp)
@@ -195,8 +195,8 @@ fun NeonDownloadPanel(
             horizontalArrangement = Arrangement.spacedBy(7.dp),
         ) {
             DownloadSummaryCard("قيد التنزيل", downloadingCount, cyan, Modifier.weight(1f))
-            DownloadSummaryCard("في الانتظار", waitingCount, Color(0xFF8EA9FF), Modifier.weight(1f))
-            DownloadSummaryCard("مكتمل", completedCount, Color(0xFF3AD6B1), Modifier.weight(1f))
+            DownloadSummaryCard("في الانتظار", waitingCount, Color(0xFF6C8BFF), Modifier.weight(1f))
+            DownloadSummaryCard("مكتمل", completedCount, Color(0xFF36E2B0), Modifier.weight(1f))
         }
         Row(
             Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
@@ -390,7 +390,7 @@ private fun NeonChapterDownloadRow(
                     progress = { row.percentage / 100f },
                     modifier = Modifier.size(46.dp),
                     color = colors.last(),
-                    trackColor = Color(0xFF24374D),
+                    trackColor = Color(0xFF292344),
                     strokeWidth = 5.dp,
                 )
                 Text("${row.percentage}%", fontSize = 11.sp, color = foreground, fontWeight = FontWeight.SemiBold)

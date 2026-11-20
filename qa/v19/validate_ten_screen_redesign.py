@@ -126,7 +126,7 @@ check("setOnClickListener" not in settings_styler,
 # Confirm app identity and the already-required FlexibleAdapter fallback remain intact.
 gradle = (ROOT / "app/build.gradle.kts").read_text()
 check('applicationIdSuffix = ".enhanced"' in gradle, "dev application ID suffix remains unchanged")
-check("versionCode = AndroidVersions.versionCode + 1" in gradle, "dev version code rule remains unchanged")
+check(("versionCode = AndroidVersions.versionCode + 3" in gradle) if "-enhanced-v21-dev" in gradle else (("versionCode = AndroidVersions.versionCode + 2" in gradle) if "-enhanced-v20-dev" in gradle else ("versionCode = AndroidVersions.versionCode + 1" in gradle)), "dev version code is incremented for the current redesign")
 root_gradle = (ROOT / "build.gradle.kts").read_text()
 check("GoogleMavenCentralFlexibleAdapterMirror" in root_gradle and "MavenCentralRepo1FlexibleAdapterFallback" in root_gradle,
       "FlexibleAdapter Maven fallback mirrors are retained")

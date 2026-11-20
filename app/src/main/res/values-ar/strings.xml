@@ -1192,4 +1192,7 @@
     <string name="enhanced_dl_waiting">انتظار</string>
     <string name="app_name">فيروس مانجا</string>
     <string name="app_short_name">فيروس مانجا</string>
+    <string name="home_genres_title">تصنيفات مكتبتك</string>
+    <string name="recent_updates_activity">نشاط التحديثات</string>
+    <string name="recent_updates_subtitle">أحدث الفصول من العناوين التي تتابعها</string>
 </resources>

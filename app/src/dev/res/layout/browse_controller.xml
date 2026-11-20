@@ -3,18 +3,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/browse_layout" android:background="@drawable/v19_screen_background">
+    android:id="@+id/browse_layout" android:background="@drawable/v21_screen_background">
 
     <FrameLayout
         android:id="@+id/browse_frame_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/v19_screen_background">
+        android:background="@drawable/v21_screen_background">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/source_recycler"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
             android:clipToPadding="false"
             tools:listitem="@layout/source_header_item" />
 

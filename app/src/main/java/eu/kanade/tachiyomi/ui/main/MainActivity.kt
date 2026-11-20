@@ -629,8 +629,10 @@ open class MainActivity : BaseActivity<MainActivityBinding>() {
         }
 
         if (!router.hasRootController()) {
-            // Set start screen
+            // V20 opens the redesigned Home dashboard once for the dev flavor.
+            // The user can still choose another start screen from General settings afterwards.
             if (!handleIntentAction(intent)) {
+                applyV20HomeStartPreference()
                 goToStartingTab()
             }
         }
@@ -1452,6 +1454,16 @@ open class MainActivity : BaseActivity<MainActivityBinding>() {
             -3 -> R.id.nav_browse
             else -> R.id.nav_library
         }
+
+    private fun applyV20HomeStartPreference() {
+        if (BuildConfig.FLAVOR != "dev") return
+        val migrationPrefs = getSharedPreferences("manga_virus_v20", Context.MODE_PRIVATE)
+        val key = "home_start_preference_applied"
+        if (!migrationPrefs.getBoolean(key, false)) {
+            preferences.startingTab().set(-4)
+            migrationPrefs.edit().putBoolean(key, true).apply()
+        }
+    }
 
     private fun goToStartingTab() {
         nav.selectedItemId = startingTab()

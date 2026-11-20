@@ -25,9 +25,11 @@ for key in ['return null', 'isBrightBalloonPixel', 'others.any']:
 for key in ['primary', 'secondary', 'hingePixels']:
     assert key in spread, key
 for key in ['applicationId = "eu.kanade.tachiyomi"','applicationIdSuffix = ".enhanced"',
-            'applicationIdSuffix = ".debugJ2K"', 'versionCode = AndroidVersions.versionCode + 1',
+            'applicationIdSuffix = ".debugJ2K"',
             'JH_UPDATE_STORE_FILE','jhStableUpdate']:
     assert key in gradle, key
+expected_dev_version = 'versionCode = AndroidVersions.versionCode + 3' if '-enhanced-v21-dev' in gradle else ('versionCode = AndroidVersions.versionCode + 2' if '-enhanced-v20-dev' in gradle else 'versionCode = AndroidVersions.versionCode + 1')
+assert expected_dev_version in gradle, expected_dev_version
 assert 'private val chapterTranslator by lazy' in reader
 assert 'startAutoTranslationIfConfigured(page)' in reader
 print('PASS: V9 source wiring and explicit signing compatibility safeguards')

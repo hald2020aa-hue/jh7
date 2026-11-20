@@ -18,7 +18,7 @@ P='{http://schemas.android.com/apk/res-auto}'
 
 visual_attrs={
  A+'background',A+'backgroundTint',A+'foreground',A+'padding',A+'paddingStart',A+'paddingEnd',
- A+'paddingTop',A+'paddingBottom',A+'layout_marginStart',A+'layout_marginEnd',A+'layout_marginTop',
+ A+'paddingTop',A+'paddingBottom',A+'alpha',A+'layout_marginStart',A+'layout_marginEnd',A+'layout_marginTop',
  A+'layout_marginBottom',A+'layout_width',A+'layout_height',A+'layout_weight',A+'gravity',
  A+'textSize',A+'textColor',A+'textAlignment',A+'progressTint',A+'progressBackgroundTint',A+'elevation',A+'minHeight',A+'clipChildren',
  A+'clipToPadding',A+'layout_gravity',A+'maxWidth',P+'cardBackgroundColor',P+'cardCornerRadius',
@@ -66,11 +66,16 @@ for rel,old in manifest['screen_bindings'].items():
   source=DEV/'res/layout'/source.name
  check(source.is_file(),f'Missing layout {source}')
  now=info(source)
- # V14 adds independent top-action controls to the dev library layout only.
- # Existing bound widgets must remain identical; only these six new IDs are allowed.
- extra = ({'library_top_actions','library_top_categories','library_top_group',
-           'library_top_display','library_top_filter','library_top_expand'}
-          if rel == 'app/src/dev/res/layout/library_controller.xml' else set())
+ # V14 adds the library action row; V21 adds data-derived summary bindings.
+ # Existing bound widgets must remain identical; only the declared presentation IDs are allowed.
+ extra = set()
+ if rel == 'app/src/dev/res/layout/library_controller.xml':
+  extra = {'library_top_actions','library_top_categories','library_top_group',
+           'library_top_display','library_top_filter','library_top_expand',
+           'library_stat_total','library_stat_completed','library_stat_reading','library_stat_downloaded'}
+ elif rel == 'app/src/dev/res/layout/recents_controller.xml':
+  extra = {'recents_summary','recents_summary_title','recents_summary_subtitle',
+           'recents_summary_chapters','recents_summary_titles','recents_summary_downloaded'}
  check(set(old).issubset(now) and set(now)-set(old)==extra,
        f'Changed functional UI binding ID set in {source}')
  for id,entry in old.items():

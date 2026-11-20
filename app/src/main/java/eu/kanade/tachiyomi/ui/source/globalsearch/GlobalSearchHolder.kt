@@ -3,7 +3,7 @@ package eu.kanade.tachiyomi.ui.source.globalsearch
 import android.annotation.SuppressLint
 import android.view.View
 import androidx.core.view.isVisible
-import com.google.android.material.carousel.CarouselLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import eu.kanade.tachiyomi.R
 import eu.kanade.tachiyomi.data.database.models.Manga
 import eu.kanade.tachiyomi.databinding.SourceGlobalSearchControllerCardBinding
@@ -33,8 +33,9 @@ class GlobalSearchHolder(
     private val binding = SourceGlobalSearchControllerCardBinding.bind(view)
 
     init {
-        // Set layout horizontal.
-        binding.recycler.layoutManager = CarouselLayoutManager()
+        // Use compact full-width result rows, matching the unified search screen.
+        binding.recycler.layoutManager = LinearLayoutManager(view.context)
+        binding.recycler.isNestedScrollingEnabled = true
         binding.recycler.adapter = mangaAdapter
         binding.titleMoreIcon.isVisible = adapter.controller !is SearchController && adapter.controller.extensionFilter == null
         if (binding.titleMoreIcon.isVisible) {

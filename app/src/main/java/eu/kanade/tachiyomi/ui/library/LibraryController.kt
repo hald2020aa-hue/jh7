@@ -76,6 +76,7 @@ import eu.kanade.tachiyomi.data.preference.PreferencesHelper
 import eu.kanade.tachiyomi.databinding.LibraryControllerBinding
 import eu.kanade.tachiyomi.databinding.MarkReadStatusDialogBinding
 import eu.kanade.tachiyomi.source.LocalSource
+import eu.kanade.tachiyomi.source.model.SManga
 import eu.kanade.tachiyomi.ui.base.MaterialMenuSheet
 import eu.kanade.tachiyomi.ui.base.MiniSearchView
 import eu.kanade.tachiyomi.ui.base.controller.BaseCoroutineController
@@ -1317,6 +1318,14 @@ open class LibraryController(
         super.onDestroyView(view)
     }
 
+    private fun updateLibrarySummary() {
+        val items = presenter.allLibraryItems
+        binding.libraryStatTotal.text = items.size.toString()
+        binding.libraryStatCompleted.text = items.count { it.manga.status == SManga.COMPLETED }.toString()
+        binding.libraryStatReading.text = items.count { it.manga.read > 0 && it.manga.unread > 0 }.toString()
+        binding.libraryStatDownloaded.text = items.count { it.downloadCount > 0 }.toString()
+    }
+
     open fun onNextLibraryUpdate(
         mangaMap: List<LibraryItem>,
         freshStart: Boolean = false,
@@ -1352,6 +1361,7 @@ open class LibraryController(
             )
         }
         adapter.setItems(mangaMap)
+        updateLibrarySummary()
         if (binding.libraryGridRecycler.recycler.translationX != 0f) {
             val time =
                 binding.root.resources

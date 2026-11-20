@@ -26,6 +26,30 @@ jobs:
           java-version: 21
       - name: Configure Gradle
         uses: gradle/actions/setup-gradle@v4
+      - name: Restore the persistent V19-compatible signing key
+        shell: bash
+        env:
+          JH_UPDATE_KEYSTORE_BASE64: ${{ secrets.JH_UPDATE_KEYSTORE_BASE64 }}
+          JH_UPDATE_STORE_PASSWORD: ${{ secrets.JH_UPDATE_STORE_PASSWORD }}
+          JH_UPDATE_KEY_ALIAS: ${{ secrets.JH_UPDATE_KEY_ALIAS }}
+          JH_UPDATE_KEY_PASSWORD: ${{ secrets.JH_UPDATE_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          for name in JH_UPDATE_KEYSTORE_BASE64 JH_UPDATE_STORE_PASSWORD JH_UPDATE_KEY_ALIAS JH_UPDATE_KEY_PASSWORD; do
+            if [[ -z "${!name:-}" ]]; then
+              echo "Missing required GitHub Actions secret: $name" >&2
+              exit 1
+            fi
+          done
+          KEYSTORE="$RUNNER_TEMP/jh-update-keystore.jks"
+          printf '%s' "$JH_UPDATE_KEYSTORE_BASE64" | base64 --decode > "$KEYSTORE"
+          test -s "$KEYSTORE"
+          {
+            printf 'JH_UPDATE_STORE_FILE=%s\n' "$KEYSTORE"
+            printf 'JH_UPDATE_STORE_PASSWORD=%s\n' "$JH_UPDATE_STORE_PASSWORD"
+            printf 'JH_UPDATE_KEY_ALIAS=%s\n' "$JH_UPDATE_KEY_ALIAS"
+            printf 'JH_UPDATE_KEY_PASSWORD=%s\n' "$JH_UPDATE_KEY_PASSWORD"
+          } >> "$GITHUB_ENV"
       - name: Check XML resources and reading activity SQL
         run: python3 qa/static_integration_checks.py
       - name: Verify enhanced UI resources and screen wiring
@@ -60,6 +84,8 @@ jobs:
         run: python3 qa/v18/validate_unified_neon.py
       - name: Validate V19 MANGA VIRUS ten-screen visual redesign
         run: python3 qa/v19/validate_ten_screen_redesign.py
+      - name: Validate V21 ten-screen visual alignment and preserved source behavior
+        run: python3 qa/v21/validate_visual_alignment.py
       - name: Run unit tests and compile debug APKs
         run: ./gradlew -Pjh.arm64Only=true --no-daemon testDevDebugUnitTest verifySingleArm64DevApk --stacktrace
       - name: Verify single APK integrity and debug signature
@@ -72,10 +98,9 @@ jobs:
           test -d "$SDK/build-tools"
           BUILD_TOOLS="$(find "$SDK/build-tools" -mindepth 1 -maxdepth 1 -type d | sort -V | tail -1)"
           "$BUILD_TOOLS/apksigner" verify --verbose --print-certs "$APK"
-          echo "NOTE: CI debug certificates are ephemeral unless an identical persistent signing key is provided."
-          echo "Do not install this as an in-place update over a differently signed APK."
+          echo "Persistent V19-compatible signing certificate verified."
           sha256sum "$APK"
-      - name: Upload unsigned/development-only APKs
+      - name: Upload signed development APKs
         uses: actions/upload-artifact@v4
         with:
           name: app-dev-arm64-v8a-debug.apk
@@ -99,6 +124,30 @@ jobs:
           java-version: 21
       - name: Configure Gradle
         uses: gradle/actions/setup-gradle@v4
+      - name: Restore the persistent V19-compatible signing key
+        shell: bash
+        env:
+          JH_UPDATE_KEYSTORE_BASE64: ${{ secrets.JH_UPDATE_KEYSTORE_BASE64 }}
+          JH_UPDATE_STORE_PASSWORD: ${{ secrets.JH_UPDATE_STORE_PASSWORD }}
+          JH_UPDATE_KEY_ALIAS: ${{ secrets.JH_UPDATE_KEY_ALIAS }}
+          JH_UPDATE_KEY_PASSWORD: ${{ secrets.JH_UPDATE_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          for name in JH_UPDATE_KEYSTORE_BASE64 JH_UPDATE_STORE_PASSWORD JH_UPDATE_KEY_ALIAS JH_UPDATE_KEY_PASSWORD; do
+            if [[ -z "${!name:-}" ]]; then
+              echo "Missing required GitHub Actions secret: $name" >&2
+              exit 1
+            fi
+          done
+          KEYSTORE="$RUNNER_TEMP/jh-update-keystore.jks"
+          printf '%s' "$JH_UPDATE_KEYSTORE_BASE64" | base64 --decode > "$KEYSTORE"
+          test -s "$KEYSTORE"
+          {
+            printf 'JH_UPDATE_STORE_FILE=%s\n' "$KEYSTORE"
+            printf 'JH_UPDATE_STORE_PASSWORD=%s\n' "$JH_UPDATE_STORE_PASSWORD"
+            printf 'JH_UPDATE_KEY_ALIAS=%s\n' "$JH_UPDATE_KEY_ALIAS"
+            printf 'JH_UPDATE_KEY_PASSWORD=%s\n' "$JH_UPDATE_KEY_PASSWORD"
+          } >> "$GITHUB_ENV"
       - name: Build universal Android APK
         run: ./gradlew -Pjh.arm64Only=false --no-daemon assembleDevDebug --stacktrace
       - name: Verify universal APK, architecture coverage and signature
@@ -122,7 +171,7 @@ jobs:
           # in the universal output metadata, not by requiring every library in every ABI.
           test "$(stat -c %s "$APK")" -gt 1048576
           sha256sum "$APK"
-          echo 'Universal dev APK checked. Debug CI key may be ephemeral.'
+          echo 'Universal dev APK checked with the configured persistent signing key.'
       - name: Upload universal dev APK
         uses: actions/upload-artifact@v4
         with:

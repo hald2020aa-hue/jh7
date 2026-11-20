@@ -1,13 +1,73 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:tools="http://schemas.android.com/tools" android:id="@+id/recents_layout" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@drawable/v19_screen_background">
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:tools="http://schemas.android.com/tools" android:id="@+id/recents_layout" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@drawable/v21_screen_background">
 
     <com.google.android.material.loadingindicator.LoadingIndicator android:id="@+id/progress" app:indicatorSize="75dp" android:layout_width="75dp" android:layout_height="75dp" android:layout_gravity="center"/>
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout android:id="@+id/swipe_refresh" android:layout_width="match_parent" android:layout_height="match_parent">
 
-        <FrameLayout android:id="@+id/recents_frame_layout" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@drawable/v19_screen_background">
+        <FrameLayout android:id="@+id/recents_frame_layout" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@drawable/v21_screen_background">
 
-            <androidx.recyclerview.widget.RecyclerView android:id="@+id/recycler" android:layout_width="match_parent" android:layout_height="match_parent" android:clipToPadding="false" android:background="@drawable/v19_screen_background" tools:listitem="@layout/recent_manga_item"/>
+            <androidx.recyclerview.widget.RecyclerView android:id="@+id/recycler" android:layout_width="match_parent" android:layout_height="match_parent" android:clipToPadding="false" android:background="@drawable/v21_screen_background" tools:listitem="@layout/recent_manga_item"/>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/recents_summary"
+                android:layout_width="match_parent"
+                android:layout_height="104dp"
+                android:layout_gravity="top"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:visibility="gone"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="@color/v19_surface"
+                app:strokeColor="@color/v19_border_soft"
+                app:strokeWidth="1dp">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:background="@drawable/v21_header_banner"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="8dp">
+                    <TextView
+                        android:id="@+id/recents_summary_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/recent_updates_activity"
+                        android:textColor="@color/v19_text"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+                    <TextView
+                        android:id="@+id/recents_summary_subtitle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/recent_updates_subtitle"
+                        android:textColor="@color/v19_muted"
+                        android:textSize="10sp"
+                        android:maxLines="1" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+                        <LinearLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="center" android:orientation="vertical">
+                            <TextView android:id="@+id/recents_summary_chapters" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textColor="@color/v19_cyan" android:textSize="17sp" android:textStyle="bold" />
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/chapters" android:textColor="@color/v19_muted" android:textSize="9sp" />
+                        </LinearLayout>
+                        <LinearLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="center" android:orientation="vertical">
+                            <TextView android:id="@+id/recents_summary_titles" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textColor="@color/v19_pink" android:textSize="17sp" android:textStyle="bold" />
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/library" android:textColor="@color/v19_muted" android:textSize="9sp" />
+                        </LinearLayout>
+                        <LinearLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="center" android:orientation="vertical">
+                            <TextView android:id="@+id/recents_summary_downloaded" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textColor="@color/v19_success" android:textSize="17sp" android:textStyle="bold" />
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/downloaded" android:textColor="@color/v19_muted" android:textSize="9sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
         </FrameLayout>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

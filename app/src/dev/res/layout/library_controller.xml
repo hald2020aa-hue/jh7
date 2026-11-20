@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:tools="http://schemas.android.com/tools" android:id="@+id/library_layout" android:background="@drawable/v19_screen_background" android:layout_width="match_parent" android:clipChildren="false" android:layout_height="match_parent">
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:tools="http://schemas.android.com/tools" android:id="@+id/library_layout" android:background="@drawable/v21_screen_background" android:layout_width="match_parent" android:clipChildren="false" android:layout_height="match_parent">
 
     <com.google.android.material.loadingindicator.LoadingIndicator android:id="@+id/progress" app:indicatorSize="75dp" android:layout_width="75dp" android:layout_height="75dp" android:layout_gravity="center"/>
 
@@ -18,7 +18,7 @@
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-    <com.google.android.material.card.MaterialCardView android:id="@+id/header_card" app:strokeWidth="1dp" app:strokeColor="@color/v19_pink_soft" android:layout_marginTop="6dp" app:cardCornerRadius="16dp" app:cardBackgroundColor="@color/v19_surface" app:cardElevation="2dp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="center|top">
+    <com.google.android.material.card.MaterialCardView android:id="@+id/header_card" app:strokeWidth="1dp" app:strokeColor="@color/v19_pink_soft" android:layout_marginTop="6dp" app:cardCornerRadius="18dp" app:cardBackgroundColor="@color/v19_surface" app:cardElevation="2dp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="center|top">
 
         <TextView android:id="@+id/header_title" style="?textAppearanceTitleSmall" android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/v19_chip" android:backgroundTint="@null" android:clickable="true" android:ellipsize="end" android:focusable="true" android:inputType="none" android:maxLines="1" android:textAlignment="center" android:paddingStart="12dp" android:paddingEnd="12dp" android:paddingTop="4dp" android:paddingBottom="4dp" android:textColor="@color/v19_text" android:textSize="14sp" tools:text="Category"/>
     </com.google.android.material.card.MaterialCardView>
@@ -29,26 +29,99 @@
     <FrameLayout
         android:id="@+id/library_top_actions"
         android:layout_width="match_parent"
-        android:layout_height="56dp"
+        android:layout_height="112dp"
         android:layout_gravity="top"
         android:layout_marginStart="10dp"
         android:layout_marginEnd="10dp"
-        android:background="@drawable/v19_action_dock"
+        android:background="@drawable/v21_header_banner"
         android:padding="3dp"
         android:elevation="8dp">
 
-        <HorizontalScrollView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:fillViewport="true"
-            android:scrollbars="none">
+            android:orientation="vertical"
+            android:padding="3dp">
+
             <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:gravity="center_vertical"
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
                 android:orientation="horizontal"
-                android:paddingStart="4dp"
-                android:paddingEnd="4dp">
+                android:gravity="center_vertical">
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_margin="2dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="0dp"
+                    app:cardBackgroundColor="@color/v19_surface"
+                    app:strokeColor="@color/v19_cyan_soft"
+                    app:strokeWidth="1dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:orientation="vertical">
+                        <TextView android:id="@+id/library_stat_total" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textColor="@color/v19_cyan" android:textSize="16sp" android:textStyle="bold" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/library" android:textColor="@color/v19_muted" android:textSize="9sp" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_margin="2dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="0dp"
+                    app:cardBackgroundColor="@color/v19_surface"
+                    app:strokeColor="@color/v19_success"
+                    app:strokeWidth="1dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:orientation="vertical">
+                        <TextView android:id="@+id/library_stat_completed" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textColor="@color/v19_success" android:textSize="16sp" android:textStyle="bold" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/completed" android:textColor="@color/v19_muted" android:textSize="9sp" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_margin="2dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="0dp"
+                    app:cardBackgroundColor="@color/v19_surface"
+                    app:strokeColor="@color/v19_pink_soft"
+                    app:strokeWidth="1dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:orientation="vertical">
+                        <TextView android:id="@+id/library_stat_reading" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textColor="@color/v19_pink" android:textSize="16sp" android:textStyle="bold" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/reading" android:textColor="@color/v19_muted" android:textSize="9sp" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_margin="2dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="0dp"
+                    app:cardBackgroundColor="@color/v19_surface"
+                    app:strokeColor="@color/v19_purple"
+                    app:strokeWidth="1dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:orientation="vertical">
+                        <TextView android:id="@+id/library_stat_downloaded" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textColor="@color/v19_purple" android:textSize="16sp" android:textStyle="bold" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/downloaded" android:textColor="@color/v19_muted" android:textSize="9sp" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
+
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:fillViewport="true"
+                android:scrollbars="none">
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingStart="4dp"
+                    android:paddingEnd="4dp">
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/library_top_categories"
                     style="@style/Widget.Material3.Button.TextButton"
@@ -94,8 +167,9 @@
                     android:textColor="@color/v19_text"
                     app:icon="@drawable/ic_expand_more_24dp"
                     app:iconTint="@color/v19_pink" />
-            </LinearLayout>
-        </HorizontalScrollView>
+                </LinearLayout>
+            </HorizontalScrollView>
+        </LinearLayout>
     </FrameLayout>
 
     <eu.kanade.tachiyomi.widget.EmptyView android:id="@+id/empty_view" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="center" android:visibility="gone" android:background="@drawable/v19_surface_card" android:padding="16dp"/>

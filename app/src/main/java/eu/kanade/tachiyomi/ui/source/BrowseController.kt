@@ -19,6 +19,7 @@ import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePaddingRelative
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bluelinelabs.conductor.ControllerChangeHandler
 import com.bluelinelabs.conductor.ControllerChangeType
@@ -57,7 +58,6 @@ import eu.kanade.tachiyomi.util.system.getResourceColor
 import eu.kanade.tachiyomi.util.system.openInBrowser
 import eu.kanade.tachiyomi.util.system.rootWindowInsetsCompat
 import eu.kanade.tachiyomi.util.system.spToPx
-import eu.kanade.tachiyomi.util.view.GroupedRowDivider
 import eu.kanade.tachiyomi.util.view.activityBinding
 import eu.kanade.tachiyomi.util.view.checkHeightThen
 import eu.kanade.tachiyomi.util.view.collapse
@@ -160,10 +160,17 @@ class BrowseController :
         val isReturning = adapter != null
         adapter = SourceAdapter(this)
         // Create binding.sourceRecycler and set adapter.
-        binding.sourceRecycler.layoutManager = LinearLayoutManagerAccurateOffset(view.context)
-
+        binding.sourceRecycler.layoutManager = if (view.resources.getBoolean(R.bool.v4_neon_mode)) {
+            val sourcesGrid = GridLayoutManager(view.context, 2)
+            sourcesGrid.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+                override fun getSpanSize(position: Int): Int =
+                    if (adapter?.getItem(position) is LangItem) 2 else 1
+            }
+            sourcesGrid
+        } else {
+            LinearLayoutManagerAccurateOffset(view.context)
+        }
         binding.sourceRecycler.adapter = adapter
-        binding.sourceRecycler.addItemDecoration(GroupedRowDivider(view.context, { it is SourceHolder }))
         adapter?.isSwipeEnabled = true
         adapter?.stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
         searchHistory.setUp()

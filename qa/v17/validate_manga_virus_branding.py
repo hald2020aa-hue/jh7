@@ -92,10 +92,11 @@ checks["English main app label"] = string_value(main, "app_name") == "MANGA VIRU
 checks["English main short label"] = string_value(main, "app_short_name") == "MANGA VIRUS"
 checks["Arabic main app label"] = string_value(main_ar, "app_name") == "فيروس مانجا"
 checks["Arabic main short label"] = string_value(main_ar, "app_short_name") == "فيروس مانجا"
-checks["English development app label"] = string_value(dev, "app_name") == "MANGA VIRUS"
-checks["English development short label"] = string_value(dev, "app_short_name") == "MANGA VIRUS"
-checks["Arabic development app label"] = string_value(dev_ar, "app_name") == "فيروس مانجا"
-checks["Arabic development short label"] = string_value(dev_ar, "app_short_name") == "فيروس مانجا"
+checks["English development app label"] = string_value(dev, "app_name") in ("MANGA VIRUS", "MANGA VIRUS V20", "MANGA VIRUS V21")
+checks["English development short label"] = string_value(dev, "app_short_name") in ("MANGA VIRUS", "MANGA VIRUS V20", "MANGA VIRUS V21")
+checks["Arabic development app label"] = string_value(dev_ar, "app_name") in ("فيروس مانجا", "فيروس مانجا V20", "فيروس مانجا V21")
+checks["Arabic development short label"] = string_value(dev_ar, "app_short_name") in ("فيروس مانجا", "فيروس مانجا V20", "فيروس مانجا V21")
+checks["V21 dev app is distinguishable from the stable app"] = string_value(dev, "app_name") == "MANGA VIRUS V21" and string_value(dev_ar, "app_name") == "فيروس مانجا V21"
 
 main_en_text = read("app/src/main/res/values/strings.xml")
 app_name_tag = re.search(r'<string\s+name="app_name"[^>]*>', main_en_text)

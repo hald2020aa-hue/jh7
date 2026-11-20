@@ -128,6 +128,8 @@ class RecentsController(
     /** Repaints the app bar for whether the list is scrolled, handed back by [scrollViewWith]. */
     private var colorToolbar: ((Boolean) -> Unit)? = null
     private var headerHeight = 0
+    private var recentsBaseTopPadding = 0
+    private var summarySpaceApplied = false
     private var ogRadius = 0f
     private var deviceRadius = 0f to 0f
     private var lastScale = 1f
@@ -248,7 +250,16 @@ class RecentsController(
                     val appBarHeight = activityBinding?.appBar?.attrToolbarHeight ?: 0
                     val systemInsets = it.ignoredSystemInsets
                     headerHeight = systemInsets.top + appBarHeight + 48.dpToPx
+                    val showUpdateSummary = presenter.viewType == RecentsViewType.Updates && presenter.recentItems.isNotEmpty()
+                    binding.recentsSummary.isVisible = showUpdateSummary
+                    summarySpaceApplied = showUpdateSummary
+                    recentsBaseTopPadding = headerHeight + 8.dpToPx
+                    binding.recentsSummary.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                        topMargin = systemInsets.top + appBarHeight + 48.dpToPx + 8.dpToPx
+                    }
+                    val summarySpace = if (showUpdateSummary) 112.dpToPx else 0
                     binding.recycler.updatePaddingRelative(
+                        top = recentsBaseTopPadding + summarySpace,
                         bottom = activityBinding?.bottomNav?.height ?: systemInsets.bottom,
                     )
                     binding.downloadBottomSheet.sheetLayout.updateLayoutParams<ViewGroup.MarginLayoutParams> {
@@ -338,8 +349,10 @@ class RecentsController(
 
         if (presenter.recentItems.isNotEmpty()) {
             adapter.updateDataSet(presenter.recentItems)
+            updateRecentsSummary(presenter.recentItems)
         } else {
             binding.recentsFrameLayout.alpha = 0f
+            binding.recentsSummary.isVisible = false
         }
 
         binding.downloadBottomSheet.dlBottomSheet.onCreate(this)
@@ -695,6 +708,21 @@ class RecentsController(
 
     fun refresh() = presenter.getRecents()
 
+    private fun updateRecentsSummary(recents: List<RecentMangaItem>) {
+        val updates = recents.filter { it.mch.manga.id != null && it.chapter.id != null }
+        val visible = presenter.viewType == RecentsViewType.Updates && updates.isNotEmpty()
+        binding.recentsSummary.isVisible = visible
+        if (recentsBaseTopPadding > 0 && visible != summarySpaceApplied) {
+            summarySpaceApplied = visible
+            val summarySpace = if (visible) 112.dpToPx else 0
+            binding.recycler.updatePaddingRelative(top = recentsBaseTopPadding + summarySpace)
+        }
+        if (!visible) return
+        binding.recentsSummaryChapters.text = updates.size.toString()
+        binding.recentsSummaryTitles.text = updates.mapNotNull { it.mch.manga.id }.distinct().size.toString()
+        binding.recentsSummaryDownloaded.text = updates.count { item -> item.downloadInfo.any { it.isDownloaded } }.toString()
+    }
+
     fun showLists(
         recents: List<RecentMangaItem>,
         hasNewItems: Boolean,
@@ -709,6 +737,7 @@ class RecentsController(
         binding.swipeRefresh.isRefreshing = LibraryUpdateJob.isRunning(view!!.context)
         adapter.removeAllScrollableHeaders()
         adapter.updateDataSet(recents)
+        updateRecentsSummary(recents)
         adapter.onLoadMoreComplete(null)
         if (isControllerVisible) {
             activityBinding?.appBar?.lockYPos = false

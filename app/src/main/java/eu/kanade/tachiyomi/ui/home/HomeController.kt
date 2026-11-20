@@ -1,5 +1,7 @@
 package eu.kanade.tachiyomi.ui.home
 
+import android.content.Intent
+import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
@@ -26,6 +28,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -46,6 +49,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.content.ContextCompat
 import eu.kanade.tachiyomi.R
 import eu.kanade.tachiyomi.data.database.DatabaseHelper
 import eu.kanade.tachiyomi.data.database.models.Manga
@@ -53,6 +57,7 @@ import eu.kanade.tachiyomi.data.image.coil.loadManga
 import eu.kanade.tachiyomi.databinding.HomeControllerBinding
 import eu.kanade.tachiyomi.source.SourceManager
 import eu.kanade.tachiyomi.ui.base.controller.BaseController
+import eu.kanade.tachiyomi.ui.download.center.DownloadCenterActivity
 import eu.kanade.tachiyomi.ui.enhanced.EnhancedReadingTheme
 import eu.kanade.tachiyomi.ui.main.FloatingSearchInterface
 import eu.kanade.tachiyomi.ui.main.MainActivity
@@ -69,13 +74,14 @@ import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
 
 /**
- * Home dashboard backed only by the user's existing library and reading history.
- * It does not fetch, seed, or insert sample manga and leaves all source flows unchanged.
+ * MANGA VIRUS home dashboard. Every title and cover comes from the user's existing
+ * library or reading history; this screen never inserts sample catalogue records.
  */
 class HomeController : BaseController<HomeControllerBinding>(), RootSearchInterface, FloatingSearchInterface {
     private var libraryManga by mutableStateOf<List<Manga>>(emptyList())
     private var recentManga by mutableStateOf<List<Manga>>(emptyList())
     private var sourceCount by mutableIntStateOf(0)
+    private var genreTags by mutableStateOf<List<String>>(emptyList())
     private var loading by mutableStateOf(true)
 
     private val db: DatabaseHelper by lazy { Injekt.get() }
@@ -84,6 +90,8 @@ class HomeController : BaseController<HomeControllerBinding>(), RootSearchInterf
     override fun createBinding(inflater: LayoutInflater) = HomeControllerBinding.inflate(inflater)
 
     override fun getTitle(): String? = view?.context?.getString(R.string.home)
+
+    override fun getBigIcon(): Drawable? = activity?.let { ContextCompat.getDrawable(it, R.mipmap.ic_launcher) }
 
     override fun getSearchTitle(): String? = searchTitle(getTitle()?.lowercase())
 
@@ -95,11 +103,15 @@ class HomeController : BaseController<HomeControllerBinding>(), RootSearchInterf
                     library = libraryManga,
                     recent = recentManga,
                     sourceCount = sourceCount,
+                    genres = genreTags,
                     loading = loading,
                     onOpenManga = ::openManga,
                     onOpenLibrary = { navigateTo(R.id.nav_library) },
                     onOpenRecents = { navigateTo(R.id.nav_recents) },
                     onBrowse = { navigateTo(R.id.nav_browse) },
+                    onDownloads = {
+                        view.context.startActivity(Intent(view.context, DownloadCenterActivity::class.java))
+                    },
                 )
             }
         }
@@ -111,10 +123,17 @@ class HomeController : BaseController<HomeControllerBinding>(), RootSearchInterf
                         .map { it.manga }
                         .distinctBy { it.id }
                         .take(12)
-                    library to recent
+                    val genres = (library + recent)
+                        .flatMap { it.getGenres().orEmpty() }
+                        .map { it.trim() }
+                        .filter { it.isNotBlank() }
+                        .distinct()
+                        .take(8)
+                    Triple(library, recent, genres)
                 }
                 libraryManga = data.first
                 recentManga = data.second
+                genreTags = data.third
                 sourceCount = sourceManager.getCatalogueSources().size
             } catch (error: Exception) {
                 Timber.e(error, "Failed to load MANGA VIRUS home dashboard")
@@ -135,54 +154,75 @@ class HomeController : BaseController<HomeControllerBinding>(), RootSearchInterf
     }
 }
 
-private val homeBackground = Color(0xFF070B16)
-private val homePanel = Color(0xFF101A2C)
-private val homePanelRaised = Color(0xFF17263D)
-private val homeText = Color(0xFFF4F7FF)
-private val homeMuted = Color(0xFFA7B4C8)
-private val homeCyan = Color(0xFF48DDF2)
-private val homeBlue = Color(0xFF587CFF)
-private val homePurple = Color(0xFF9B69FF)
-private val homePink = Color(0xFFFF4FA3)
+private val homeBackground = Color(0xFF060711)
+private val homePanel = Color(0xFF111426)
+private val homePanelRaised = Color(0xFF1B1B35)
+private val homeText = Color(0xFFF8F5FF)
+private val homeMuted = Color(0xFFB2AEC9)
+private val homeCyan = Color(0xFF55E7FF)
+private val homeBlue = Color(0xFF6C8BFF)
+private val homePurple = Color(0xFFA66BFF)
+private val homePink = Color(0xFFFF4BC8)
 
 @Composable
 private fun HomeDashboard(
     library: List<Manga>,
     recent: List<Manga>,
     sourceCount: Int,
+    genres: List<String>,
     loading: Boolean,
     onOpenManga: (Manga) -> Unit,
     onOpenLibrary: () -> Unit,
     onOpenRecents: () -> Unit,
     onBrowse: () -> Unit,
+    onDownloads: () -> Unit,
 ) {
     androidx.compose.runtime.CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
+        val context = LocalContext.current
+        val featured = recent.firstOrNull() ?: library.firstOrNull()
         LazyColumn(
             modifier = Modifier.fillMaxSize().background(homeBackground),
-            contentPadding = PaddingValues(start = 14.dp, end = 14.dp, top = 12.dp, bottom = 24.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+            contentPadding = PaddingValues(start = 14.dp, end = 14.dp, top = 10.dp, bottom = 26.dp),
+            verticalArrangement = Arrangement.spacedBy(13.dp),
         ) {
             item {
                 Row(
                     modifier = Modifier.fillMaxWidth()
-                        .clip(RoundedCornerShape(20.dp))
-                        .background(Brush.horizontalGradient(listOf(homePanelRaised, homePanel, Color(0xFF21172F))))
-                        .padding(horizontal = 16.dp, vertical = 14.dp),
+                        .clip(RoundedCornerShape(22.dp))
+                        .background(Brush.horizontalGradient(listOf(Color(0xFF142A49), Color(0xFF17152F), Color(0xFF30143B))))
+                        .padding(horizontal = 16.dp, vertical = 13.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
+                    AndroidView(
+                        factory = { imageContext ->
+                            ImageView(imageContext).apply {
+                                setImageResource(R.mipmap.ic_launcher)
+                                scaleType = ImageView.ScaleType.FIT_CENTER
+                                contentDescription = context.getString(R.string.app_name)
+                            }
+                        },
+                        modifier = Modifier.size(48.dp),
+                    )
+                    Spacer(Modifier.width(10.dp))
                     Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(3.dp)) {
-                        Text("MANGA VIRUS", color = homeCyan, fontSize = 18.sp, fontWeight = FontWeight.Black)
-                        Text("${LocalContext.current.getString(R.string.home)} • ${LocalContext.current.getString(R.string.continue_reading)}", color = homeMuted, fontSize = 12.sp)
+                        Text("MANGA VIRUS", color = homeCyan, fontSize = 19.sp, fontWeight = FontWeight.Black)
+                        Text(context.getString(R.string.home), color = homeText, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
+                        Text(context.getString(R.string.continue_reading), color = homeMuted, fontSize = 11.sp)
                     }
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(library.size.toString(), color = homePink, fontSize = 22.sp, fontWeight = FontWeight.Bold)
-                        Text(LocalContext.current.getString(R.string.library), color = homeMuted, fontSize = 10.sp)
+                    Surface(
+                        shape = RoundedCornerShape(15.dp),
+                        color = Color(0xFF281744),
+                        border = BorderStroke(1.dp, homePink.copy(alpha = 0.8f)),
+                    ) {
+                        Column(Modifier.padding(horizontal = 14.dp, vertical = 7.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text(library.size.toString(), color = homeText, fontSize = 21.sp, fontWeight = FontWeight.Bold)
+                            Text(context.getString(R.string.library), color = homeMuted, fontSize = 10.sp)
+                        }
                     }
                 }
             }
 
             item {
-                val featured = recent.firstOrNull() ?: library.firstOrNull()
                 if (featured != null) {
                     HomeFeaturedCard(featured, recent.isNotEmpty(), onClick = { onOpenManga(featured) })
                 } else {
@@ -191,17 +231,45 @@ private fun HomeDashboard(
             }
 
             item {
-                HomeSectionHeader(
-                    title = LocalContext.current.getString(R.string.continue_reading),
-                    count = recent.size,
-                    onSeeAll = onOpenRecents,
-                )
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+                    HomeStatCard(context.getString(R.string.library), library.size.toString(), homeCyan, Modifier.weight(1f))
+                    HomeStatCard(context.getString(R.string.continue_reading), recent.size.toString(), homePink, Modifier.weight(1f))
+                    HomeStatCard(context.getString(R.string.browse), sourceCount.toString(), homePurple, Modifier.weight(1f))
+                }
+            }
+
+            if (genres.isNotEmpty()) {
+                item {
+                    HomeSectionHeader(context.getString(R.string.home_genres_title), genres.size, null)
+                    LazyRow(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        contentPadding = PaddingValues(vertical = 3.dp),
+                    ) {
+                        items(genres) { genre ->
+                            HomeGenreChip(genre, genres.indexOf(genre))
+                        }
+                    }
+                }
+            }
+
+            item {
+                HomeSectionHeader(context.getString(R.string.browse), null, null)
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+                    HomeAction(context.getString(R.string.library), homePurple, Modifier.weight(1f), onOpenLibrary)
+                    HomeAction(context.getString(R.string.updates), homePink, Modifier.weight(1f), onOpenRecents)
+                    HomeAction(context.getString(R.string.browse), homeCyan, Modifier.weight(1f), onBrowse)
+                    HomeAction(context.getString(R.string.downloads), homeBlue, Modifier.weight(1f), onDownloads)
+                }
+            }
+
+            item {
+                HomeSectionHeader(context.getString(R.string.continue_reading), recent.size.takeIf { it > 0 }, onOpenRecents)
             }
             if (recent.isEmpty()) {
-                item { HomeEmptyHint(LocalContext.current.getString(R.string.home_no_recent)) }
+                item { HomeEmptyHint(if (loading) context.getString(R.string.loading) else context.getString(R.string.home_no_recent)) }
             } else {
                 item {
-                    LazyRow(horizontalArrangement = Arrangement.spacedBy(10.dp), contentPadding = PaddingValues(vertical = 2.dp)) {
+                    LazyRow(horizontalArrangement = Arrangement.spacedBy(10.dp), contentPadding = PaddingValues(vertical = 3.dp)) {
                         items(recent, key = { it.id ?: it.url.hashCode().toLong() }) { manga ->
                             HomeMangaPoster(manga, onClick = { onOpenManga(manga) })
                         }
@@ -210,17 +278,13 @@ private fun HomeDashboard(
             }
 
             item {
-                HomeSectionHeader(
-                    title = LocalContext.current.getString(R.string.library),
-                    count = library.size,
-                    onSeeAll = onOpenLibrary,
-                )
+                HomeSectionHeader(context.getString(R.string.library), library.size.takeIf { it > 0 }, onOpenLibrary)
             }
             if (library.isEmpty()) {
-                item { HomeEmptyHint(LocalContext.current.getString(R.string.home_empty_library)) }
+                item { HomeEmptyHint(if (loading) context.getString(R.string.loading) else context.getString(R.string.home_empty_library)) }
             } else {
                 item {
-                    LazyRow(horizontalArrangement = Arrangement.spacedBy(10.dp), contentPadding = PaddingValues(vertical = 2.dp)) {
+                    LazyRow(horizontalArrangement = Arrangement.spacedBy(10.dp), contentPadding = PaddingValues(vertical = 3.dp)) {
                         items(library.take(12), key = { it.id ?: it.url.hashCode().toLong() }) { manga ->
                             HomeMangaPoster(manga, onClick = { onOpenManga(manga) })
                         }
@@ -230,9 +294,9 @@ private fun HomeDashboard(
 
             item {
                 Card(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().clickable(onClick = onBrowse),
                     shape = RoundedCornerShape(18.dp),
-                    border = BorderStroke(1.dp, homeCyan.copy(alpha = 0.45f)),
+                    border = BorderStroke(1.dp, homeCyan.copy(alpha = 0.65f)),
                     colors = CardDefaults.cardColors(containerColor = homePanel),
                 ) {
                     Row(
@@ -240,16 +304,16 @@ private fun HomeDashboard(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(12.dp),
                     ) {
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(LocalContext.current.getString(R.string.browse), color = homeText, fontWeight = FontWeight.Bold)
-                            Text(LocalContext.current.getString(R.string.home_sources_available, sourceCount), color = homeMuted, fontSize = 12.sp)
+                        Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(3.dp)) {
+                            Text(context.getString(R.string.browse), color = homeText, fontWeight = FontWeight.Bold)
+                            Text(context.getString(R.string.home_sources_available, sourceCount), color = homeMuted, fontSize = 12.sp)
                         }
                         Button(
                             onClick = onBrowse,
                             colors = ButtonDefaults.buttonColors(containerColor = homePurple, contentColor = Color.White),
                             shape = RoundedCornerShape(14.dp),
                         ) {
-                            Text(LocalContext.current.getString(R.string.browse))
+                            Text(context.getString(R.string.browse))
                         }
                     }
                 }
@@ -259,39 +323,97 @@ private fun HomeDashboard(
 }
 
 @Composable
+private fun HomeStatCard(label: String, value: String, accent: Color, modifier: Modifier = Modifier) {
+    Card(
+        modifier = modifier,
+        shape = RoundedCornerShape(16.dp),
+        border = BorderStroke(1.dp, accent.copy(alpha = 0.7f)),
+        colors = CardDefaults.cardColors(containerColor = homePanel),
+    ) {
+        Column(
+            modifier = Modifier.fillMaxWidth().padding(vertical = 11.dp, horizontal = 7.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(3.dp),
+        ) {
+            Text(value, color = accent, fontSize = 20.sp, fontWeight = FontWeight.Bold)
+            Text(label, color = homeMuted, fontSize = 10.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
+        }
+    }
+}
+
+@Composable
+private fun HomeGenreChip(label: String, index: Int) {
+    val accents = listOf(homeCyan, homePink, homePurple, homeBlue)
+    val accent = accents[index % accents.size]
+    Surface(
+        shape = RoundedCornerShape(50),
+        color = homePanelRaised,
+        border = BorderStroke(1.dp, accent.copy(alpha = 0.78f)),
+    ) {
+        Text(
+            label,
+            color = homeText,
+            fontSize = 11.sp,
+            fontWeight = FontWeight.SemiBold,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.padding(horizontal = 13.dp, vertical = 8.dp),
+        )
+    }
+}
+
+@Composable
+private fun HomeAction(label: String, accent: Color, modifier: Modifier = Modifier, onClick: () -> Unit) {
+    Surface(
+        modifier = modifier.height(66.dp).clickable(onClick = onClick),
+        shape = RoundedCornerShape(15.dp),
+        color = homePanelRaised,
+        border = BorderStroke(1.dp, accent.copy(alpha = 0.65f)),
+    ) {
+        Box(contentAlignment = Alignment.Center) {
+            Text(label, color = homeText, fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
+        }
+    }
+}
+
+@Composable
 private fun HomeFeaturedCard(manga: Manga, isContinueReading: Boolean, onClick: () -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth().clickable(onClick = onClick),
         shape = RoundedCornerShape(22.dp),
-        border = BorderStroke(1.2.dp, Brush.horizontalGradient(listOf(homeCyan, homeBlue, homePink))),
+        border = BorderStroke(1.5.dp, Brush.horizontalGradient(listOf(homeCyan, homeBlue, homePink))),
         colors = CardDefaults.cardColors(containerColor = homePanel),
     ) {
-        Row(
+        Box(
             modifier = Modifier.fillMaxWidth()
-                .background(Brush.horizontalGradient(listOf(Color(0xFF162A46), Color(0xFF111A2E), Color(0xFF26172F))))
-                .padding(14.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(14.dp),
+                .background(Brush.horizontalGradient(listOf(Color(0xFF142A49), Color(0xFF111426), Color(0xFF28133B))))
+                .padding(13.dp),
         ) {
-            Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(7.dp)) {
-                Text(
-                    if (isContinueReading) "${LocalContext.current.getString(R.string.continue_reading)}" else LocalContext.current.getString(R.string.library),
-                    color = homeCyan,
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Bold,
-                )
-                Text(manga.title, color = homeText, fontSize = 20.sp, fontWeight = FontWeight.Bold, maxLines = 2, overflow = TextOverflow.Ellipsis)
-                val subtitle = manga.author?.takeIf { it.isNotBlank() } ?: manga.artist?.takeIf { it.isNotBlank() }
-                if (subtitle != null) Text(subtitle, color = homeMuted, fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                Button(
-                    onClick = onClick,
-                    colors = ButtonDefaults.buttonColors(containerColor = homePink, contentColor = Color.White),
-                    shape = RoundedCornerShape(14.dp),
-                ) {
-                    Text(LocalContext.current.getString(R.string.open))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(13.dp),
+            ) {
+                Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(7.dp)) {
+                    Text(
+                        if (isContinueReading) "${LocalContext.current.getString(R.string.continue_reading)}" else LocalContext.current.getString(R.string.library),
+                        color = homeCyan,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                    )
+                    Text(manga.title, color = homeText, fontSize = 21.sp, fontWeight = FontWeight.Bold, maxLines = 2, overflow = TextOverflow.Ellipsis)
+                    val subtitle = manga.author?.takeIf { it.isNotBlank() } ?: manga.artist?.takeIf { it.isNotBlank() }
+                    if (subtitle != null) Text(subtitle, color = homeMuted, fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    Button(
+                        onClick = onClick,
+                        colors = ButtonDefaults.buttonColors(containerColor = homePink, contentColor = Color.White),
+                        shape = RoundedCornerShape(14.dp),
+                    ) {
+                        Text(LocalContext.current.getString(R.string.open))
+                    }
                 }
+                MangaCover(manga, Modifier.size(width = 116.dp, height = 156.dp))
             }
-            MangaCover(manga, Modifier.size(width = 108.dp, height = 146.dp))
         }
     }
 }
@@ -301,7 +423,7 @@ private fun HomeEmptyCard(loading: Boolean, onBrowse: () -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(22.dp),
-        border = BorderStroke(1.dp, homePurple.copy(alpha = 0.65f)),
+        border = BorderStroke(1.dp, homePurple.copy(alpha = 0.75f)),
         colors = CardDefaults.cardColors(containerColor = homePanel),
     ) {
         Column(Modifier.fillMaxWidth().padding(20.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -321,17 +443,19 @@ private fun HomeEmptyCard(loading: Boolean, onBrowse: () -> Unit) {
 }
 
 @Composable
-private fun HomeSectionHeader(title: String, count: Int, onSeeAll: () -> Unit) {
+private fun HomeSectionHeader(title: String, count: Int?, onSeeAll: (() -> Unit)?) {
     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         Text(title, color = homeText, fontSize = 17.sp, fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
-        Text(count.toString(), color = homeCyan, fontSize = 13.sp, fontWeight = FontWeight.Bold)
-        Spacer(Modifier.width(10.dp))
-        Text(
-            LocalContext.current.getString(R.string.home_see_all),
-            color = homePink,
-            fontSize = 12.sp,
-            modifier = Modifier.clip(RoundedCornerShape(12.dp)).clickable(onClick = onSeeAll).padding(horizontal = 8.dp, vertical = 5.dp),
-        )
+        if (count != null) Text(count.toString(), color = homeCyan, fontSize = 13.sp, fontWeight = FontWeight.Bold)
+        if (onSeeAll != null) {
+            Spacer(Modifier.width(10.dp))
+            Text(
+                LocalContext.current.getString(R.string.home_see_all),
+                color = homePink,
+                fontSize = 12.sp,
+                modifier = Modifier.clip(RoundedCornerShape(12.dp)).clickable(onClick = onSeeAll).padding(horizontal = 8.dp, vertical = 5.dp),
+            )
+        }
     }
 }
 
@@ -341,7 +465,13 @@ private fun HomeMangaPoster(manga: Manga, onClick: () -> Unit) {
         modifier = Modifier.width(112.dp).clickable(onClick = onClick),
         verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
-        MangaCover(manga, Modifier.fillMaxWidth().height(148.dp))
+        Card(
+            shape = RoundedCornerShape(15.dp),
+            border = BorderStroke(1.dp, homePurple.copy(alpha = 0.75f)),
+            colors = CardDefaults.cardColors(containerColor = homePanelRaised),
+        ) {
+            MangaCover(manga, Modifier.fillMaxWidth().height(148.dp))
+        }
         Text(manga.title, color = homeText, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, maxLines = 2, overflow = TextOverflow.Ellipsis)
         val subtitle = manga.author?.takeIf { it.isNotBlank() } ?: manga.artist?.takeIf { it.isNotBlank() }
         if (subtitle != null) Text(subtitle, color = homeMuted, fontSize = 10.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
