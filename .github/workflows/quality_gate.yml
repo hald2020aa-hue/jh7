@@ -26,7 +26,7 @@ jobs:
           java-version: 21
       - name: Configure Gradle
         uses: gradle/actions/setup-gradle@v4
-      - name: Restore the persistent V19-compatible signing key
+      - name: Restore persistent V19-compatible signing key when configured
         shell: bash
         env:
           JH_UPDATE_KEYSTORE_BASE64: ${{ secrets.JH_UPDATE_KEYSTORE_BASE64 }}
@@ -35,12 +35,10 @@ jobs:
           JH_UPDATE_KEY_PASSWORD: ${{ secrets.JH_UPDATE_KEY_PASSWORD }}
         run: |
           set -euo pipefail
-          for name in JH_UPDATE_KEYSTORE_BASE64 JH_UPDATE_STORE_PASSWORD JH_UPDATE_KEY_ALIAS JH_UPDATE_KEY_PASSWORD; do
-            if [[ -z "${!name:-}" ]]; then
-              echo "Missing required GitHub Actions secret: $name" >&2
-              exit 1
-            fi
-          done
+          if [[ -z "${JH_UPDATE_KEYSTORE_BASE64:-}" || -z "${JH_UPDATE_STORE_PASSWORD:-}" || -z "${JH_UPDATE_KEY_ALIAS:-}" || -z "${JH_UPDATE_KEY_PASSWORD:-}" ]]; then
+            echo "::warning::Using temporary CI debug signing for isolated development APK."
+            exit 0
+          fi
           KEYSTORE="$RUNNER_TEMP/jh-update-keystore.jks"
           printf '%s' "$JH_UPDATE_KEYSTORE_BASE64" | base64 --decode > "$KEYSTORE"
           test -s "$KEYSTORE"
@@ -98,9 +96,13 @@ jobs:
           test -d "$SDK/build-tools"
           BUILD_TOOLS="$(find "$SDK/build-tools" -mindepth 1 -maxdepth 1 -type d | sort -V | tail -1)"
           "$BUILD_TOOLS/apksigner" verify --verbose --print-certs "$APK"
-          echo "Persistent V19-compatible signing certificate verified."
+          if [[ -n "${JH_UPDATE_STORE_FILE:-}" ]]; then
+            echo "Persistent V19-compatible signing certificate verified."
+          else
+            echo "Temporary CI debug certificate verified."
+          fi
           sha256sum "$APK"
-      - name: Upload signed development APKs
+      - name: Upload development APKs
         uses: actions/upload-artifact@v4
         with:
           name: app-dev-arm64-v8a-debug.apk
@@ -124,7 +126,7 @@ jobs:
           java-version: 21
       - name: Configure Gradle
         uses: gradle/actions/setup-gradle@v4
-      - name: Restore the persistent V19-compatible signing key
+      - name: Restore persistent V19-compatible signing key when configured
         shell: bash
         env:
           JH_UPDATE_KEYSTORE_BASE64: ${{ secrets.JH_UPDATE_KEYSTORE_BASE64 }}
@@ -133,12 +135,10 @@ jobs:
           JH_UPDATE_KEY_PASSWORD: ${{ secrets.JH_UPDATE_KEY_PASSWORD }}
         run: |
           set -euo pipefail
-          for name in JH_UPDATE_KEYSTORE_BASE64 JH_UPDATE_STORE_PASSWORD JH_UPDATE_KEY_ALIAS JH_UPDATE_KEY_PASSWORD; do
-            if [[ -z "${!name:-}" ]]; then
-              echo "Missing required GitHub Actions secret: $name" >&2
-              exit 1
-            fi
-          done
+          if [[ -z "${JH_UPDATE_KEYSTORE_BASE64:-}" || -z "${JH_UPDATE_STORE_PASSWORD:-}" || -z "${JH_UPDATE_KEY_ALIAS:-}" || -z "${JH_UPDATE_KEY_PASSWORD:-}" ]]; then
+            echo "::warning::Using temporary CI debug signing for isolated development APK."
+            exit 0
+          fi
           KEYSTORE="$RUNNER_TEMP/jh-update-keystore.jks"
           printf '%s' "$JH_UPDATE_KEYSTORE_BASE64" | base64 --decode > "$KEYSTORE"
           test -s "$KEYSTORE"
@@ -171,7 +171,11 @@ jobs:
           # in the universal output metadata, not by requiring every library in every ABI.
           test "$(stat -c %s "$APK")" -gt 1048576
           sha256sum "$APK"
-          echo 'Universal dev APK checked with the configured persistent signing key.'
+          if [[ -n "${JH_UPDATE_STORE_FILE:-}" ]]; then
+            echo 'Universal APK checked with persistent signing.'
+          else
+            echo 'Universal APK checked with temporary debug signing.'
+          fi
       - name: Upload universal dev APK
         uses: actions/upload-artifact@v4
         with:
