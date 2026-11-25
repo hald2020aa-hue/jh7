@@ -20,14 +20,14 @@ visual_attrs={
  A+'background',A+'backgroundTint',A+'foreground',A+'padding',A+'paddingStart',A+'paddingEnd',
  A+'paddingTop',A+'paddingBottom',A+'alpha',A+'layout_marginStart',A+'layout_marginEnd',A+'layout_marginTop',
  A+'layout_marginBottom',A+'layout_width',A+'layout_height',A+'layout_weight',A+'gravity',
- A+'textSize',A+'textColor',A+'textAlignment',A+'progressTint',A+'progressBackgroundTint',A+'elevation',A+'minHeight',A+'clipChildren',
+ A+'maxHeight',A+'textSize',A+'textColor',A+'textAlignment',A+'progressTint',A+'progressBackgroundTint',A+'elevation',A+'minHeight',A+'clipChildren',
  A+'clipToPadding',A+'layout_gravity',A+'maxWidth',P+'cardBackgroundColor',P+'cardCornerRadius',
  P+'cardElevation',P+'strokeColor',P+'strokeWidth',P+'cornerRadius',P+'backgroundTint',
  P+'iconTint',P+'thumbTint',P+'trackTint',P+'itemIconTint',P+'itemTextColor',
  P+'itemActiveIndicatorColor',P+'thumbColor',P+'trackColorActive',P+'trackColorInactive',
  # Material progress-indicator tint and track geometry are presentation-only.
  P+'indicatorColor',P+'trackColor',P+'trackThickness',P+'trackCornerRadius',P+'indicatorSize',P+'tint',
- P+'popupTheme',P+'layout_constraintHorizontal_bias',P+'layout_constrainedWidth',
+ P+'popupTheme',P+'layout_constraintHorizontal_bias',P+'layout_constraintWidth_percent',P+'layout_constrainedWidth',
  P+'layout_constraintEnd_toEndOf',
 }
 
