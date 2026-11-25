@@ -1,5 +1,6 @@
 # V24 regression checks for the reader toolbar crash and browse spacing.
 from pathlib import Path
+import json
 import xml.etree.ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -40,9 +41,10 @@ for token in (
     check(token in controller, f"adaptive browse spacing remains wired: {token}")
 
 source_item = (DEV / "layout/source_item.xml").read_text(encoding="utf-8")
+margin = json.loads((ROOT / "MANGA_VIRUS_VARIANT.json").read_text())["geometry"]["source_margin"] if (ROOT / "MANGA_VIRUS_VARIANT.json").exists() else 7
 for edge in ("Start", "Top", "End", "Bottom"):
     check(
-        f'android:layout_margin{edge}="7dp"' in source_item,
+        f'android:layout_margin{edge}="{margin}dp"' in source_item,
         f"source card {edge.lower()} spacing is 7dp",
     )
 
