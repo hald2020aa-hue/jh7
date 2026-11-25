@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- V22 visual tokens. No image or manga data is embedded in these resources. -->
-    <color name="v22_void">#050613</color>
-    <color name="v22_night">#080A1B</color>
-    <color name="v22_raised">#15142F</color>
-    <color name="v22_raised_alt">#22183D</color>
-    <color name="v22_cyan">#36E6FF</color>
-    <color name="v22_violet">#9A4DFF</color>
-    <color name="v22_magenta">#FC39ED</color>
-    <color name="v22_text">#FFF8FF</color>
-    <color name="v22_muted">#C3BDDA</color>
-    <color name="v22_stroke">#925BDB</color>
-    <color name="v22_stroke_soft">#845E85C4</color>
-    <color name="v22_green">#3BEBBF</color>
-    <color name="v22_track">#39305C</color>
+    <color name="v22_void">#061018</color>
+    <color name="v22_night">#091923</color>
+    <color name="v22_raised">#153140</color>
+    <color name="v22_raised_alt">#1D4050</color>
+    <color name="v22_cyan">#35D5D0</color>
+    <color name="v22_violet">#607DAD</color>
+    <color name="v22_magenta">#65C6BD</color>
+    <color name="v22_text">#F1FBFF</color>
+    <color name="v22_muted">#A9C2CE</color>
+    <color name="v22_stroke">#3996D8</color>
+    <color name="v22_stroke_soft">#8835D5D0</color>
+    <color name="v22_green">#53D7A4</color>
+    <color name="v22_track">#294957</color>
 </resources>
