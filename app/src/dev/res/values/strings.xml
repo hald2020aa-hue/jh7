@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">MANGA VIRUS V21</string>
-    <string name="app_short_name">MANGA VIRUS V21</string>
+    <string name="app_name">MANGA VIRUS V22</string>
+    <string name="app_short_name">MANGA VIRUS V22</string>
     <string name="home_genres_title">Genres in your library</string>
+    <string name="v23_browse_title">Explore sources</string>
+    <string name="v23_browse_caption">Browse installed real manga sources</string>
+    <string name="v23_search_title">Search results</string>
+    <string name="v23_search_caption">Real manga titles from your sources</string>
 </resources>

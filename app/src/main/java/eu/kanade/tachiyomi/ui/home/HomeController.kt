@@ -34,10 +34,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
@@ -154,15 +156,15 @@ class HomeController : BaseController<HomeControllerBinding>(), RootSearchInterf
     }
 }
 
-private val homeBackground = Color(0xFF060711)
-private val homePanel = Color(0xFF111426)
-private val homePanelRaised = Color(0xFF1B1B35)
+private val homeBackground = Color(0xFF050613)
+private val homePanel = Color(0xFF10152D)
+private val homePanelRaised = Color(0xFF1D183A)
 private val homeText = Color(0xFFF8F5FF)
 private val homeMuted = Color(0xFFB2AEC9)
-private val homeCyan = Color(0xFF55E7FF)
+private val homeCyan = Color(0xFF36E6FF)
 private val homeBlue = Color(0xFF6C8BFF)
-private val homePurple = Color(0xFFA66BFF)
-private val homePink = Color(0xFFFF4BC8)
+private val homePurple = Color(0xFF9A4DFF)
+private val homePink = Color(0xFFFC39ED)
 
 @Composable
 private fun HomeDashboard(
@@ -179,11 +181,23 @@ private fun HomeDashboard(
 ) {
     androidx.compose.runtime.CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         val context = LocalContext.current
-        val featured = recent.firstOrNull() ?: library.firstOrNull()
+        // The concept's featured carousel navigates only actual user library/history items.
+        val featuredPool = remember(library, recent) {
+            (recent + library).distinctBy { it.id ?: it.url.hashCode().toLong() }.take(8)
+        }
+        var featuredIndex by remember { mutableIntStateOf(0) }
+        val activeFeaturedIndex = if (featuredPool.isEmpty()) 0 else featuredIndex.mod(featuredPool.size)
+        val featured = featuredPool.getOrNull(activeFeaturedIndex)
+        var selectedGenre by remember { mutableStateOf<String?>(null) }
+        val visibleLibrary = remember(library, selectedGenre) {
+            if (selectedGenre == null) library else library.filter { manga ->
+                manga.getGenres().orEmpty().any { genre -> genre.equals(selectedGenre, ignoreCase = true) }
+            }
+        }
         LazyColumn(
             modifier = Modifier.fillMaxSize().background(homeBackground),
-            contentPadding = PaddingValues(start = 14.dp, end = 14.dp, top = 10.dp, bottom = 26.dp),
-            verticalArrangement = Arrangement.spacedBy(13.dp),
+            contentPadding = PaddingValues(start = 12.dp, end = 12.dp, top = 12.dp, bottom = 34.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             item {
                 Row(
@@ -224,7 +238,16 @@ private fun HomeDashboard(
 
             item {
                 if (featured != null) {
-                    HomeFeaturedCard(featured, recent.isNotEmpty(), onClick = { onOpenManga(featured) })
+                    HomeFeaturedCard(
+                        manga = featured,
+                        isContinueReading = recent.any { it.id == featured.id },
+                        currentIndex = activeFeaturedIndex,
+                        totalCount = featuredPool.size,
+                        onPrevious = { if (featuredPool.isNotEmpty()) featuredIndex = (activeFeaturedIndex + featuredPool.size - 1) % featuredPool.size },
+                        onNext = { if (featuredPool.isNotEmpty()) featuredIndex = (activeFeaturedIndex + 1) % featuredPool.size },
+                        onSelect = { position -> featuredIndex = position },
+                        onClick = { onOpenManga(featured) },
+                    )
                 } else {
                     HomeEmptyCard(loading = loading, onBrowse = onBrowse)
                 }
@@ -246,7 +269,9 @@ private fun HomeDashboard(
                         contentPadding = PaddingValues(vertical = 3.dp),
                     ) {
                         items(genres) { genre ->
-                            HomeGenreChip(genre, genres.indexOf(genre))
+                            HomeGenreChip(genre, genres.indexOf(genre), selectedGenre == genre) {
+                                selectedGenre = if (selectedGenre == genre) null else genre
+                            }
                         }
                     }
                 }
@@ -278,11 +303,24 @@ private fun HomeDashboard(
             }
 
             item {
-                HomeSectionHeader(context.getString(R.string.library), library.size.takeIf { it > 0 }, onOpenLibrary)
+                HomeSectionHeader(context.getString(R.string.library), visibleLibrary.size.takeIf { it > 0 }, onOpenLibrary)
             }
-            if (library.isEmpty()) {
+            if (visibleLibrary.isEmpty()) {
                 item { HomeEmptyHint(if (loading) context.getString(R.string.loading) else context.getString(R.string.home_empty_library)) }
             } else {
+                item {
+                    LazyRow(horizontalArrangement = Arrangement.spacedBy(10.dp), contentPadding = PaddingValues(vertical = 3.dp)) {
+                        items(visibleLibrary.take(18), key = { it.id ?: it.url.hashCode().toLong() }) { manga ->
+                            HomeMangaPoster(manga, onClick = { onOpenManga(manga) })
+                        }
+                    }
+                }
+            }
+
+            // The second discovery rail is built from genuine recently-added library records.
+            // The existing database query sorts libraryManga by date_added (never mock results).
+            if (library.isNotEmpty() && selectedGenre == null) {
+                item { HomeSectionHeader("أُضيف مؤخرًا", library.size, onOpenLibrary) }
                 item {
                     LazyRow(horizontalArrangement = Arrangement.spacedBy(10.dp), contentPadding = PaddingValues(vertical = 3.dp)) {
                         items(library.take(12), key = { it.id ?: it.url.hashCode().toLong() }) { manga ->
@@ -342,23 +380,34 @@ private fun HomeStatCard(label: String, value: String, accent: Color, modifier: 
 }
 
 @Composable
-private fun HomeGenreChip(label: String, index: Int) {
+private fun HomeGenreChip(label: String, index: Int, selected: Boolean, onClick: () -> Unit) {
     val accents = listOf(homeCyan, homePink, homePurple, homeBlue)
     val accent = accents[index % accents.size]
     Surface(
+        modifier = Modifier.clickable(onClick = onClick),
         shape = RoundedCornerShape(50),
-        color = homePanelRaised,
-        border = BorderStroke(1.dp, accent.copy(alpha = 0.78f)),
+        color = if (selected) accent.copy(alpha = 0.24f) else homePanelRaised,
+        border = BorderStroke(if (selected) 2.dp else 1.dp, accent.copy(alpha = if (selected) 1f else 0.78f)),
     ) {
-        Text(
-            label,
-            color = homeText,
-            fontSize = 11.sp,
-            fontWeight = FontWeight.SemiBold,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.padding(horizontal = 13.dp, vertical = 8.dp),
-        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(7.dp),
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 11.dp),
+        ) {
+            // Icons are semantic decoration based on the real genre label, not new catalogue metadata.
+            val icon = when {
+                label.contains("action", ignoreCase = true) || label.contains("أكشن") -> "⚔"
+                label.contains("romance", ignoreCase = true) || label.contains("رومان") -> "♡"
+                label.contains("fantasy", ignoreCase = true) || label.contains("فانتاز") -> "✧"
+                label.contains("sci", ignoreCase = true) || label.contains("خيال علم") -> "◎"
+                label.contains("adventure", ignoreCase = true) || label.contains("مغام") -> "◇"
+                label.contains("super", ignoreCase = true) || label.contains("خارقة") -> "✴"
+                else -> "✦"
+            }
+            Text(icon, color = accent, fontSize = 19.sp, fontWeight = FontWeight.Bold)
+            Text(label, color = homeText, fontSize = 12.sp, fontWeight = FontWeight.SemiBold,
+                maxLines = 1, overflow = TextOverflow.Ellipsis)
+        }
     }
 }
 
@@ -377,42 +426,107 @@ private fun HomeAction(label: String, accent: Color, modifier: Modifier = Modifi
 }
 
 @Composable
-private fun HomeFeaturedCard(manga: Manga, isContinueReading: Boolean, onClick: () -> Unit) {
+private fun HomeFeaturedCard(
+    manga: Manga,
+    isContinueReading: Boolean,
+    currentIndex: Int,
+    totalCount: Int,
+    onPrevious: () -> Unit,
+    onNext: () -> Unit,
+    onSelect: (Int) -> Unit,
+    onClick: () -> Unit,
+) {
+    // V22: cinematic artwork comes from the real Manga cover via the existing image loader.
+    // It deliberately never uses titles, characters, covers or counters from the concept art.
     Card(
         modifier = Modifier.fillMaxWidth().clickable(onClick = onClick),
-        shape = RoundedCornerShape(22.dp),
-        border = BorderStroke(1.5.dp, Brush.horizontalGradient(listOf(homeCyan, homeBlue, homePink))),
+        shape = RoundedCornerShape(24.dp),
+        border = BorderStroke(2.dp, Brush.horizontalGradient(listOf(homeCyan, homePurple, homePink))),
         colors = CardDefaults.cardColors(containerColor = homePanel),
     ) {
-        Box(
-            modifier = Modifier.fillMaxWidth()
-                .background(Brush.horizontalGradient(listOf(Color(0xFF142A49), Color(0xFF111426), Color(0xFF28133B))))
-                .padding(13.dp),
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(13.dp),
+        Box(Modifier.fillMaxWidth().height(264.dp)) {
+            MangaCover(manga, Modifier.fillMaxSize().alpha(0.55f))
+            Box(
+                Modifier.fillMaxSize().background(
+                    Brush.horizontalGradient(
+                        listOf(Color(0xE4080920), Color(0xC5111233), Color(0xA6200D42), Color(0x42130727)),
+                    ),
+                ),
+            )
+            Column(
+                modifier = Modifier.fillMaxSize().padding(horizontal = 18.dp, vertical = 17.dp),
+                verticalArrangement = Arrangement.spacedBy(9.dp),
             ) {
-                Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(7.dp)) {
+                Surface(
+                    color = homePink.copy(alpha = 0.25f),
+                    border = BorderStroke(1.dp, homePink.copy(alpha = 0.85f)),
+                    shape = RoundedCornerShape(50),
+                ) {
                     Text(
-                        if (isContinueReading) "${LocalContext.current.getString(R.string.continue_reading)}" else LocalContext.current.getString(R.string.library),
-                        color = homeCyan,
-                        fontSize = 12.sp,
+                        if (isContinueReading) LocalContext.current.getString(R.string.continue_reading) else LocalContext.current.getString(R.string.library),
+                        color = homeText,
+                        fontSize = 11.sp,
                         fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 5.dp),
                     )
-                    Text(manga.title, color = homeText, fontSize = 21.sp, fontWeight = FontWeight.Bold, maxLines = 2, overflow = TextOverflow.Ellipsis)
-                    val subtitle = manga.author?.takeIf { it.isNotBlank() } ?: manga.artist?.takeIf { it.isNotBlank() }
-                    if (subtitle != null) Text(subtitle, color = homeMuted, fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                }
+                Spacer(Modifier.weight(1f))
+                Text(manga.title, color = homeText, fontSize = 28.sp, fontWeight = FontWeight.Black,
+                    maxLines = 2, overflow = TextOverflow.Ellipsis)
+                val subtitle = manga.author?.takeIf { it.isNotBlank() } ?: manga.artist?.takeIf { it.isNotBlank() }
+                if (subtitle != null) Text(subtitle, color = homeMuted, fontSize = 12.sp,
+                    maxLines = 1, overflow = TextOverflow.Ellipsis)
+                Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                     Button(
                         onClick = onClick,
                         colors = ButtonDefaults.buttonColors(containerColor = homePink, contentColor = Color.White),
-                        shape = RoundedCornerShape(14.dp),
+                        shape = RoundedCornerShape(25.dp),
                     ) {
-                        Text(LocalContext.current.getString(R.string.open))
+                        Text(LocalContext.current.getString(R.string.open), fontWeight = FontWeight.Bold)
+                    }
+                    Spacer(Modifier.weight(1f))
+                    Text("MANGA VIRUS", color = homeCyan, fontWeight = FontWeight.Bold, fontSize = 11.sp)
+                }
+            }
+            if (totalCount > 1) {
+                Row(
+                    modifier = Modifier.fillMaxWidth().align(Alignment.Center).padding(horizontal = 7.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Surface(
+                        modifier = Modifier.size(34.dp).clickable(onClick = onPrevious),
+                        shape = RoundedCornerShape(50), color = Color(0xA7161033),
+                        border = BorderStroke(1.dp, homeCyan.copy(alpha = 0.65f)),
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Text("‹", color = homeText, fontSize = 27.sp, fontWeight = FontWeight.Bold)
+                        }
+                    }
+                    Surface(
+                        modifier = Modifier.size(34.dp).clickable(onClick = onNext),
+                        shape = RoundedCornerShape(50), color = Color(0xA7161033),
+                        border = BorderStroke(1.dp, homePink.copy(alpha = 0.65f)),
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Text("›", color = homeText, fontSize = 27.sp, fontWeight = FontWeight.Bold)
+                        }
                     }
                 }
-                MangaCover(manga, Modifier.size(width = 116.dp, height = 156.dp))
+                Row(
+                    modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 7.dp),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    repeat(totalCount) { index ->
+                        Surface(
+                            modifier = Modifier.size(if (index == currentIndex) 9.dp else 6.dp)
+                                .clickable { onSelect(index) },
+                            shape = RoundedCornerShape(50),
+                            color = if (index == currentIndex) homeCyan else homePurple.copy(alpha = 0.64f),
+                        ) {}
+                    }
+                }
             }
         }
     }
@@ -461,20 +575,26 @@ private fun HomeSectionHeader(title: String, count: Int?, onSeeAll: (() -> Unit)
 
 @Composable
 private fun HomeMangaPoster(manga: Manga, onClick: () -> Unit) {
-    Column(
-        modifier = Modifier.width(112.dp).clickable(onClick = onClick),
-        verticalArrangement = Arrangement.spacedBy(6.dp),
+    Card(
+        modifier = Modifier.width(126.dp).clickable(onClick = onClick),
+        shape = RoundedCornerShape(15.dp),
+        border = BorderStroke(1.dp, homePurple.copy(alpha = 0.85f)),
+        colors = CardDefaults.cardColors(containerColor = homePanelRaised),
     ) {
-        Card(
-            shape = RoundedCornerShape(15.dp),
-            border = BorderStroke(1.dp, homePurple.copy(alpha = 0.75f)),
-            colors = CardDefaults.cardColors(containerColor = homePanelRaised),
-        ) {
-            MangaCover(manga, Modifier.fillMaxWidth().height(148.dp))
+        Box(Modifier.fillMaxWidth().height(174.dp)) {
+            MangaCover(manga, Modifier.fillMaxSize())
+            Box(
+                Modifier.fillMaxSize().background(
+                    Brush.verticalGradient(
+                        listOf(Color.Transparent, Color(0x10040815), Color(0xF006081C)),
+                    ),
+                ),
+            )
+            Column(Modifier.align(Alignment.BottomStart).padding(8.dp)) {
+                Text(manga.title, color = homeText, fontSize = 12.sp, fontWeight = FontWeight.Bold,
+                    maxLines = 2, overflow = TextOverflow.Ellipsis)
+            }
         }
-        Text(manga.title, color = homeText, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, maxLines = 2, overflow = TextOverflow.Ellipsis)
-        val subtitle = manga.author?.takeIf { it.isNotBlank() } ?: manga.artist?.takeIf { it.isNotBlank() }
-        if (subtitle != null) Text(subtitle, color = homeMuted, fontSize = 10.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
     }
 }
 

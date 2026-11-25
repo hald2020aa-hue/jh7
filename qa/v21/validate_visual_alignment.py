@@ -136,11 +136,11 @@ for path in protected:
 # V21 app identity and release safety.
 gradle = read('app/build.gradle.kts')
 test('applicationIdSuffix = ".enhanced"' in gradle, 'dev package remains isolated from stable package')
-test('versionNameSuffix = "-enhanced-v21-dev"' in gradle, 'V21 development build is identifiable')
-test('versionCode = AndroidVersions.versionCode + 3' in gradle, 'V21 version code advances monotonically')
+test('versionNameSuffix = "-enhanced-v22-dev"' in gradle, 'V22 development build is identifiable')
+test('versionCode = AndroidVersions.versionCode + 4' in gradle, 'V22 version code advances monotonically')
 for file, expected in [
-    ('app/src/dev/res/values/strings.xml', 'MANGA VIRUS V21'),
-    ('app/src/dev/res/values-ar/strings.xml', 'فيروس مانجا V21'),
+    ('app/src/dev/res/values/strings.xml', 'MANGA VIRUS V22'),
+    ('app/src/dev/res/values-ar/strings.xml', 'فيروس مانجا V22'),
 ]:
     test(expected in read(file), f'{file} identifies V21')
 

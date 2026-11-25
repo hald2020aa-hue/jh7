@@ -123,9 +123,9 @@ android {
             // Preserves the exact V8 debug app package:
             // eu.kanade.tachiyomi.enhanced.debugJ2K (do not change this identity).
             applicationIdSuffix = ".enhanced"
-            // Incremented for V21 so Android accepts the dev update over V20.
-            versionCode = AndroidVersions.versionCode + 3
-            versionNameSuffix = "-enhanced-v21-dev"
+            // Incremented for V22; update in-place still requires an identical signing certificate.
+            versionCode = AndroidVersions.versionCode + 4
+            versionNameSuffix = "-enhanced-v22-dev"
         }
     }
 

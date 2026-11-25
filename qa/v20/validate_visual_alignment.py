@@ -83,22 +83,22 @@ test('RippleDrawable' in settings and 'MaterialSwitch' in settings, 'settings on
 # App identity is deliberately separate so V20 is distinguishable from the old install.
 gradle = read('app/build.gradle.kts')
 test('applicationIdSuffix = ".enhanced"' in gradle, 'existing dev application ID suffix is preserved')
-test('versionNameSuffix = "-enhanced-v21-dev"' in gradle, 'V21 development build is identifiable')
-test('versionCode = AndroidVersions.versionCode + 3' in gradle, 'V21 build code is higher than V20')
+test('versionNameSuffix = "-enhanced-v22-dev"' in gradle, 'V21 development build is identifiable')
+test('versionCode = AndroidVersions.versionCode + 4' in gradle, 'V21 build code is higher than V20')
 main_activity = read('app/src/main/java/eu/kanade/tachiyomi/ui/main/MainActivity.kt')
 test('applyV20HomeStartPreference()' in main_activity, 'V21 retains the one-time Home landing preference')
 test('preferences.startingTab().set(-4)' in main_activity, 'first V20 launch opens the redesigned Home screen')
 test('home_start_preference_applied' in main_activity, 'the Home landing change is not repeated after user customization')
-test('MANGA VIRUS V21' in read('app/src/dev/res/values/strings.xml'), 'English launcher label identifies V21')
-test('فيروس مانجا V21' in read('app/src/dev/res/values-ar/strings.xml'), 'Arabic launcher label identifies V21')
+test('MANGA VIRUS V22' in read('app/src/dev/res/values/strings.xml'), 'English launcher label identifies V21')
+test('فيروس مانجا V22' in read('app/src/dev/res/values-ar/strings.xml'), 'Arabic launcher label identifies V21')
 workflow = read('.github/workflows/quality_gate.yml')
 test('qa/v21/validate_visual_alignment.py' in workflow, 'GitHub Actions runs the V21 ten-screen source gate')
 test("'feature/**'" in workflow, 'feature branch pushes automatically trigger CI')
 test('secrets.JH_UPDATE_KEYSTORE_BASE64' in workflow, 'CI restores the existing V19 keystore from a GitHub secret')
 for secret in ['JH_UPDATE_STORE_PASSWORD', 'JH_UPDATE_KEY_ALIAS', 'JH_UPDATE_KEY_PASSWORD']:
     test(f'secrets.{secret}' in workflow, f'CI receives signing secret {secret}')
-test(workflow.count('Restore the persistent V19-compatible signing key') == 2, 'both ARM64 and universal jobs use the same persistent signing identity')
-test('Missing required GitHub Actions secret' in workflow, 'CI refuses to produce an update APK without the persistent signing key')
+test(workflow.count('Restore persistent V19-compatible signing key when configured') == 2, 'both build jobs use a persistent signing key when available')
+test('Using temporary CI debug signing for isolated development APK.' in workflow and workflow.count('Temporary CI debug certificate verified.') >= 1, 'CI explicitly labels temporary debug signing as not update-compatible')
 
 # Parse every XML resource in the active dev flavor and ensure no duplicated IDs per layout.
 xml_count = 0

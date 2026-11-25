@@ -8,7 +8,7 @@
 
     <Space android:id="@+id/bottom_space" android:layout_width="match_parent" app:layout_constraintTop_toTopOf="@id/title_layout" android:layout_marginTop="12dp" android:layout_height="0dp"/>
 
-    <androidx.constraintlayout.widget.ConstraintLayout android:id="@+id/title_layout" android:layout_width="match_parent" android:layout_height="?attr/actionBarSize" android:layout_gravity="top" android:background="@drawable/v18_surface_card" android:clickable="true" android:focusable="true" app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent" app:layout_constraintBottom_toBottomOf="parent">
+    <androidx.constraintlayout.widget.ConstraintLayout android:id="@+id/title_layout" android:layout_width="match_parent" android:layout_height="?attr/actionBarSize" android:layout_gravity="top" android:background="@drawable/v22_hero_banner" android:clickable="true" android:focusable="true" app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent" app:layout_constraintBottom_toBottomOf="parent">
 
         <com.google.android.material.button.MaterialButton android:id="@+id/reset_btn" style="@style/Widget.Material3Expressive.Button.TextButton" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/reset" app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintEnd_toStartOf="@id/search_btn" app:layout_constraintHorizontal_chainStyle="spread_inside" app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toTopOf="parent"/>
 

@@ -84,6 +84,10 @@ jobs:
         run: python3 qa/v19/validate_ten_screen_redesign.py
       - name: Validate V21 ten-screen visual alignment and preserved source behavior
         run: python3 qa/v21/validate_visual_alignment.py
+      - name: Validate V22 all-screen redesign, live controls, and protected engine source
+        run: python3 qa/v22/validate_v22.py
+      - name: Validate V23 visual reinforcement and preserve engines/preferences
+        run: python3 qa/v23/validate_visual_integration.py
       - name: Run unit tests and compile debug APKs
         run: ./gradlew -Pjh.arm64Only=true --no-daemon testDevDebugUnitTest verifySingleArm64DevApk --stacktrace
       - name: Verify single APK integrity and debug signature

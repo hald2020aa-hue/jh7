@@ -2,6 +2,7 @@ package eu.kanade.tachiyomi.ui.download
 
 import android.widget.ImageView
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -36,6 +37,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -52,6 +54,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -59,6 +63,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
+import eu.kanade.tachiyomi.R
 import eu.kanade.tachiyomi.data.download.model.Download
 import eu.kanade.tachiyomi.data.image.coil.loadManga
 import eu.kanade.tachiyomi.ui.enhanced.estimatedTransferSeconds
@@ -78,12 +83,12 @@ data class NeonDownloadRow(
     val completedInCache: Int,
 )
 
-private val background = Color(0xFF05050D)
-private val panel = Color(0xFF0F1122)
+private val background = Color(0xFF050613)
+private val panel = Color(0xFF12142C)
 private val foreground = Color(0xFFFBF7FF)
 private val muted = Color(0xFFB9B2D0)
-private val cyan = Color(0xFF31E4FF)
-private val pink = Color(0xFFFF32CB)
+private val cyan = Color(0xFF36E6FF)
+private val pink = Color(0xFFFC39ED)
 private val palettes = listOf(
     listOf(Color(0xFF04D5E6), Color(0xFF2275FC), Color(0xFF983BEC), Color(0xFFF11DBF)),
     listOf(Color(0xFFFF4265), Color(0xFFE11DA6), Color(0xFF9655F2)),
@@ -108,7 +113,7 @@ private fun NeonProgressTrack(value: Float, colors: List<Color>, modifier: Modif
     val fraction = value.coerceIn(0f, 1f)
     Box(
         modifier = modifier.fillMaxWidth().height(14.dp).clip(RoundedCornerShape(20.dp))
-            .background(Color(0xFF292344)),
+            .background(Color(0xFF3E2B5E)),
     ) {
         Box(
             Modifier.fillMaxWidth(fraction).height(14.dp)
@@ -126,16 +131,16 @@ private fun DownloadSummaryCard(
 ) {
     Card(
         modifier = modifier,
-        shape = RoundedCornerShape(16.dp),
-        border = BorderStroke(1.dp, accent.copy(alpha = 0.55f)),
+        shape = RoundedCornerShape(17.dp),
+        border = BorderStroke(1.5.dp, accent.copy(alpha = 0.8f)),
         colors = CardDefaults.cardColors(containerColor = panel),
     ) {
         Column(
-            Modifier.fillMaxWidth().padding(horizontal = 9.dp, vertical = 8.dp),
+            Modifier.fillMaxWidth().padding(horizontal = 9.dp, vertical = 13.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(2.dp),
         ) {
-            Text(value.toString(), color = accent, fontSize = 19.sp, fontWeight = FontWeight.Bold)
+            Text(value.toString(), color = accent, fontSize = 22.sp, fontWeight = FontWeight.Bold)
             Text(label, color = muted, fontSize = 10.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
         }
     }
@@ -179,28 +184,59 @@ fun NeonDownloadPanel(
         Modifier.fillMaxSize().background(background).padding(horizontal = 12.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        Row(Modifier.fillMaxWidth().padding(top = 10.dp, bottom = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-            Text("قائمة التنزيل", color = foreground, fontWeight = FontWeight.Bold, fontSize = 22.sp)
-            Spacer(Modifier.weight(1f))
-            Icon(Icons.Default.Download, contentDescription = null, tint = cyan)
-            if (onClose != null) {
-                IconButton(onClick = onClose) {
-                    Icon(Icons.Default.Close, contentDescription = "إغلاق", tint = foreground)
+        // V23 visual pass: reference-inspired art is decorative only; every manga cover,
+        // speed, transfer byte count and action continues to come from the live download rows.
+        Card(
+            modifier = Modifier.fillMaxWidth().padding(top = 10.dp),
+            shape = RoundedCornerShape(23.dp),
+            border = BorderStroke(1.5.dp, Brush.horizontalGradient(listOf(cyan, Color(0xFF8956FF), pink))),
+            colors = CardDefaults.cardColors(containerColor = panel),
+        ) {
+            Box(Modifier.fillMaxWidth().height(154.dp)) {
+                Image(
+                    painter = painterResource(id = R.drawable.v23_header_art),
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop,
+                )
+                Box(
+                    Modifier.fillMaxSize().background(
+                        Brush.horizontalGradient(
+                            listOf(Color(0xF4070B20), Color(0xCE101027), Color(0x5A160D35)),
+                        ),
+                    ),
+                )
+                Column(
+                    Modifier.align(Alignment.CenterStart).padding(horizontal = 18.dp, vertical = 14.dp),
+                    verticalArrangement = Arrangement.spacedBy(7.dp),
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Default.Download, contentDescription = null, tint = cyan, modifier = Modifier.size(30.dp))
+                        Spacer(Modifier.width(10.dp))
+                        Text("التنزيلات", color = foreground, fontWeight = FontWeight.Black, fontSize = 26.sp)
+                    }
+                    Text("إدارة فصول المانجا المحفوظة وقائمة الانتظار", color = foreground, fontSize = 12.sp)
+                    Text("قائمة التنزيل", color = pink, fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
+                    Text("${rows.size} فصلًا في قائمة التنزيل", color = cyan, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
+                }
+                if (onClose != null) {
+                    IconButton(onClick = onClose, modifier = Modifier.align(Alignment.TopEnd)) {
+                        Icon(Icons.Default.Close, contentDescription = "إغلاق", tint = foreground)
+                    }
                 }
             }
         }
-        Text("${rows.size} فصلًا في قائمة التنزيل", color = muted, fontSize = 12.sp)
         Row(
             Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(7.dp),
         ) {
             DownloadSummaryCard("قيد التنزيل", downloadingCount, cyan, Modifier.weight(1f))
-            DownloadSummaryCard("في الانتظار", waitingCount, Color(0xFF6C8BFF), Modifier.weight(1f))
+            DownloadSummaryCard("في الانتظار", waitingCount, pink, Modifier.weight(1f))
             DownloadSummaryCard("مكتمل", completedCount, Color(0xFF36E2B0), Modifier.weight(1f))
         }
         Row(
             Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
-            horizontalArrangement = Arrangement.spacedBy(7.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             listOf(
                 "all" to "الكل (${rows.size})",
@@ -213,7 +249,14 @@ fun NeonDownloadPanel(
                 FilterChip(
                     selected = selectedFilter == key,
                     onClick = { selectedFilter = key },
-                    label = { Text(label, maxLines = 1) },
+                    label = { Text(label, maxLines = 1, fontWeight = FontWeight.SemiBold) },
+                    shape = RoundedCornerShape(50),
+                    colors = FilterChipDefaults.filterChipColors(
+                        containerColor = Color(0xFF1A1A38),
+                        labelColor = foreground,
+                        selectedContainerColor = Color(0xFF5E2184),
+                        selectedLabelColor = Color.White,
+                    ),
                 )
             }
         }
@@ -225,26 +268,29 @@ fun NeonDownloadPanel(
                 )
             }
         } else {
-            LazyColumn(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                val grouped = visibleRows.groupBy { it.download.manga.id }
-                grouped.forEach { (_, chapters) ->
-                    val current = chapters.firstOrNull { it.status == Download.State.DOWNLOADING }
-                        ?: chapters.firstOrNull { !it.paused } ?: chapters.first()
-                    item(key = "banner_${chapters.first().download.manga.id}") {
-                        MangaNeonDownloadCard(
-                            current = current,
-                            completed = chapters.first().completedInCache,
-                            queued = chapters.size,
-                            onPause = { onPause(current.download) },
-                            onResume = { onResume(current.download) },
-                        )
-                    }
-                    item(key = "label_${chapters.first().download.manga.id}") {
-                        Text("الفصول — ${chapters.first().name}", color = foreground, fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(top = 12.dp, bottom = 3.dp))
-                    }
-                    items(chapters, key = { it.download.chapter.id ?: it.hashCode() }) { row ->
-                        NeonChapterDownloadRow(row, onPause, onResume, onDelete, onPrioritize)
+            LazyColumn(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(9.dp)) {
+                // Stable status order. The rows are actual manager queue records, not samples.
+                val groups = listOf(
+                    "قيد التنزيل" to visibleRows.filter { it.status == Download.State.DOWNLOADING && !it.paused },
+                    "في الانتظار" to visibleRows.filter { it.status == Download.State.QUEUE && !it.paused },
+                    "متوقف" to visibleRows.filter { it.paused },
+                    "مكتمل" to visibleRows.filter { it.status == Download.State.DOWNLOADED && !it.paused },
+                    "متعثر" to visibleRows.filter { it.status == Download.State.ERROR && !it.paused },
+                )
+                groups.forEach { (label, chapters) ->
+                    if (chapters.isNotEmpty()) {
+                        item(key = "status_$label") {
+                            Row(Modifier.fillMaxWidth().padding(top = 10.dp, bottom = 3.dp),
+                                verticalAlignment = Alignment.CenterVertically) {
+                                Text("$label (${chapters.size})", color = if (label == "مكتمل") Color(0xFF36E2B0) else pink,
+                                    fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                                Spacer(Modifier.width(8.dp))
+                                Box(Modifier.weight(1f).height(1.dp).background(Color(0xFF654189)))
+                            }
+                        }
+                        items(chapters, key = { "${label}_${it.download.chapter.id ?: it.hashCode()}" }) { row ->
+                            NeonChapterDownloadRow(row, onPause, onResume, onDelete, onPrioritize)
+                        }
                     }
                 }
             }
@@ -366,14 +412,18 @@ private fun NeonChapterDownloadRow(
     val stats by row.download.transferStats.collectAsState()
     var expanded by remember { mutableStateOf(false) }
     var confirmDelete by remember { mutableStateOf(false) }
-    val colors = if (row.status == Download.State.DOWNLOADING && !row.paused) colorsFor(row)
-        else listOf(Color(0xFF4C627E), Color(0xFF758AA5))
+    val active = row.status == Download.State.DOWNLOADING && !row.paused
+    val colors = if (active) colorsFor(row) else listOf(Color(0xFF518DBB), Color(0xFF9E53D1))
     Card(
-        shape = RoundedCornerShape(17.dp),
-        border = BorderStroke(1.dp, if (row.status == Download.State.DOWNLOADING && !row.paused) colors.last() else Color(0xFF304861)),
+        shape = RoundedCornerShape(18.dp),
+        border = BorderStroke(1.dp, if (active) colors.last() else Color(0xFF4D507D)),
         colors = CardDefaults.cardColors(containerColor = panel),
     ) {
-        Row(Modifier.fillMaxWidth().padding(horizontal = 9.dp, vertical = 7.dp), verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            Modifier.fillMaxWidth().padding(horizontal = 9.dp, vertical = 9.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(9.dp),
+        ) {
             AndroidView(
                 factory = { context ->
                     ImageView(context).apply {
@@ -382,37 +432,47 @@ private fun NeonChapterDownloadRow(
                     }
                 },
                 update = { it.loadManga(row.download.manga) },
-                modifier = Modifier.size(width = 44.dp, height = 58.dp).clip(RoundedCornerShape(10.dp)),
+                modifier = Modifier.size(width = 58.dp, height = 76.dp).clip(RoundedCornerShape(12.dp)),
             )
-            Spacer(Modifier.width(8.dp))
-            Box(contentAlignment = Alignment.Center, modifier = Modifier.size(51.dp)) {
-                CircularProgressIndicator(
-                    progress = { row.percentage / 100f },
-                    modifier = Modifier.size(46.dp),
-                    color = colors.last(),
-                    trackColor = Color(0xFF292344),
-                    strokeWidth = 5.dp,
-                )
-                Text("${row.percentage}%", fontSize = 11.sp, color = foreground, fontWeight = FontWeight.SemiBold)
-            }
-            Spacer(Modifier.width(9.dp))
-            Column(Modifier.weight(1f)) {
-                Text(row.chapterName, fontSize = 14.sp, color = foreground, fontWeight = FontWeight.Bold,
+            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(5.dp)) {
+                Text(row.name, fontSize = 15.sp, color = foreground, fontWeight = FontWeight.Bold,
                     maxLines = 1, overflow = TextOverflow.Ellipsis)
-                Text("${row.downloadedPages}/${row.totalPages?.toString() ?: "؟"} صفحة · ${stats.knownChapterBytes?.let(::bytesString) ?: "الحجم غير معروف"}",
-                    fontSize = 11.sp, color = muted, maxLines = 1, overflow = TextOverflow.Ellipsis)
-            }
-            IconButton(onClick = { if (row.paused || row.status != Download.State.DOWNLOADING) onResume(row.download) else onPause(row.download) }) {
-                Icon(if (row.paused || row.status != Download.State.DOWNLOADING) Icons.Default.Download else Icons.Default.Pause,
-                    contentDescription = "إيقاف أو استئناف الفصل", tint = cyan)
-            }
-            Box {
-                IconButton(onClick = { expanded = true }) {
-                    Icon(Icons.Default.MoreVert, contentDescription = "خيارات الفصل", tint = foreground)
+                Text(row.chapterName, fontSize = 12.sp, color = muted,
+                    maxLines = 1, overflow = TextOverflow.Ellipsis)
+                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                    Text("${row.percentage}%", fontSize = 13.sp, color = cyan, fontWeight = FontWeight.Bold)
+                    Spacer(Modifier.weight(1f))
+                    Text(
+                        if (active) "${bytesString(stats.speedBytesPerSecond)}/s" else
+                            when { row.paused -> "متوقف"; row.status == Download.State.DOWNLOADED -> "مكتمل";
+                                row.status == Download.State.ERROR -> "متعثر"; else -> "في الانتظار" },
+                        fontSize = 11.sp, color = if (active) cyan else muted,
+                    )
                 }
-                DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-                    DropdownMenuItem(text = { Text("نقل إلى الأعلى") }, onClick = { expanded = false; onPrioritize(row.download) })
-                    DropdownMenuItem(text = { Text("إلغاء تنزيل الفصل") }, onClick = { expanded = false; confirmDelete = true })
+                NeonProgressTrack(row.percentage / 100f, colors)
+                Text(
+                    "${row.downloadedPages}/${row.totalPages?.toString() ?: "؟"} صفحة  ·  ${stats.knownChapterBytes?.let(::bytesString) ?: "الحجم غير معروف"}",
+                    fontSize = 10.sp, color = muted, maxLines = 1, overflow = TextOverflow.Ellipsis,
+                )
+            }
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                IconButton(onClick = {
+                    if (row.paused || row.status != Download.State.DOWNLOADING) onResume(row.download)
+                    else onPause(row.download)
+                }) {
+                    Icon(
+                        if (row.paused || row.status != Download.State.DOWNLOADING) Icons.Default.PlayArrow else Icons.Default.Pause,
+                        contentDescription = "إيقاف أو استئناف الفصل", tint = cyan,
+                    )
+                }
+                Box {
+                    IconButton(onClick = { expanded = true }) {
+                        Icon(Icons.Default.MoreVert, contentDescription = "خيارات الفصل", tint = foreground)
+                    }
+                    DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+                        DropdownMenuItem(text = { Text("نقل إلى الأعلى") }, onClick = { expanded = false; onPrioritize(row.download) })
+                        DropdownMenuItem(text = { Text("إلغاء تنزيل الفصل") }, onClick = { expanded = false; confirmDelete = true })
+                    }
                 }
             }
         }

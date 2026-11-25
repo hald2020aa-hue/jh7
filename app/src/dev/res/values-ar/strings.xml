@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">فيروس مانجا V21</string>
-    <string name="app_short_name">فيروس مانجا V21</string>
+    <string name="app_name">فيروس مانجا V22</string>
+    <string name="app_short_name">فيروس مانجا V22</string>
     <string name="download_queue">قائمة التنزيل</string>
     <string name="downloads">التنزيل</string>
     <string name="downloading">جاري التنزيل</string>
@@ -23,4 +23,8 @@
     <string name="v7_translation_appearance">مظهر الترجمة العربية</string>
     <string name="v7_translation_retry">إعادة محاولة الصفحات التي فشلت ترجمتها</string>
     <string name="home_genres_title">تصنيفات مكتبتك</string>
+    <string name="v23_browse_title">استكشاف المصادر</string>
+    <string name="v23_browse_caption">تصفّح مصادر المانجا الحقيقية المثبتة في التطبيق</string>
+    <string name="v23_search_title">نتائج البحث</string>
+    <string name="v23_search_caption">الأعمال والفصول من المصادر الحقيقية</string>
 </resources>

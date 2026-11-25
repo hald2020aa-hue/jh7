@@ -1,0 +1,122 @@
+[
+  {
+    "test": "qa/enhanced/validate_ui.py",
+    "success": true,
+    "last_line": "ENHANCED UI STATIC CHECKS: 29 / 29 PASS",
+    "failure": ""
+  },
+  {
+    "test": "qa/neon/validate_neon.py",
+    "success": true,
+    "last_line": "NEON DESIGN/INTEGRATION: 181/181 PASS — not an Android build",
+    "failure": ""
+  },
+  {
+    "test": "qa/neon/validate_v5.py",
+    "success": true,
+    "last_line": "V5 INTEGRATION STATIC: 41/41 PASS (not an Android build)",
+    "failure": ""
+  },
+  {
+    "test": "qa/static_integration_checks.py",
+    "success": true,
+    "last_line": "STATIC INTEGRATION CHECKS: 10 / 10 PASS",
+    "failure": ""
+  },
+  {
+    "test": "qa/v11/validate_visual_redesign.py",
+    "success": true,
+    "last_line": "NOTE: Not proof of APK compilation or physical-screen rendering.",
+    "failure": ""
+  },
+  {
+    "test": "qa/v12/validate_translation_recovery.py",
+    "success": true,
+    "last_line": "NOT a substitute for Android compilation, real OCR/ML Kit or on-device visual QA",
+    "failure": ""
+  },
+  {
+    "test": "qa/v13/validate_settings_neon.py",
+    "success": true,
+    "last_line": "V13 SETTINGS STATIC CHECKS PASSED — NOT AN ANDROID BUILD OR DEVICE VALIDATION",
+    "failure": ""
+  },
+  {
+    "test": "qa/v14/validate_library_top_actions.py",
+    "success": true,
+    "last_line": "V14 PASS: five top actions retain original behavior, menu IDs unchanged, resources parse",
+    "failure": ""
+  },
+  {
+    "test": "qa/v15/validate_library_header_clearance.py",
+    "success": true,
+    "last_line": "V15 PASS: live search-card alignment, list/empty clearance, listener cleanup",
+    "failure": ""
+  },
+  {
+    "test": "qa/v16/validate_crash_hardening.py",
+    "success": true,
+    "last_line": "PASS 10 crash hardening checks",
+    "failure": ""
+  },
+  {
+    "test": "qa/v17/validate_manga_virus_branding.py",
+    "success": true,
+    "last_line": "PASS 94 MANGA VIRUS V17 branding checks",
+    "failure": ""
+  },
+  {
+    "test": "qa/v18/validate_unified_neon.py",
+    "success": true,
+    "last_line": "V18 UNIFIED NEON STATIC CHECKS PASSED — NOT AN APK BUILD OR DEVICE VALIDATION",
+    "failure": ""
+  },
+  {
+    "test": "qa/v19/validate_ten_screen_redesign.py",
+    "success": true,
+    "last_line": "V19 TEN-SCREEN VISUAL STATIC CHECKS PASSED — NOT AN APK BUILD OR DEVICE TEST",
+    "failure": ""
+  },
+  {
+    "test": "qa/v20/validate_visual_alignment.py",
+    "success": true,
+    "last_line": "V21 LEGACY VISUAL ALIGNMENT CHECKS: 222/222 PASS — source checks only; no APK or device validation.",
+    "failure": ""
+  },
+  {
+    "test": "qa/v21/validate_visual_alignment.py",
+    "success": true,
+    "last_line": "V21 VISUAL ALIGNMENT CHECKS: 258/258 PASS — source checks only; no APK or device validation.",
+    "failure": ""
+  },
+  {
+    "test": "qa/v22/validate_v22.py",
+    "success": true,
+    "last_line": "V22 PROTECTED SOURCE + TEN SCREEN CHECKS: 1439/1439 PASS — static/source checks only.",
+    "failure": ""
+  },
+  {
+    "test": "qa/v6/validate_v6.py",
+    "success": true,
+    "last_line": "V6 STATIC PRECHECK: 35/35 PASS (NOT Android compile)",
+    "failure": ""
+  },
+  {
+    "test": "qa/v7/validate_v7.py",
+    "success": true,
+    "last_line": "V7 STATIC PRECHECK: 50/50 PASS — Android build and physical testing still required",
+    "failure": ""
+  },
+  {
+    "test": "qa/v8/validate_v8.py",
+    "success": true,
+    "last_line": "V8 STATIC CHECKS PASS (NOT device testing)",
+    "failure": ""
+  },
+  {
+    "test": "qa/v9/validate_v9.py",
+    "success": true,
+    "last_line": "PASS: V9 source wiring and explicit signing compatibility safeguards",
+    "failure": ""
+  }
+]

@@ -1,28 +1,24 @@
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:id="@+id/browse_layout" android:background="@drawable/v21_screen_background">
+<?xml version='1.0' encoding='UTF-8'?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent" android:layout_height="match_parent" android:id="@+id/browse_layout" android:background="@drawable/v22_screen_background">
 
-    <FrameLayout
-        android:id="@+id/browse_frame_layout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/v21_screen_background">
+    <FrameLayout android:id="@+id/browse_frame_layout" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@drawable/v22_screen_background">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/source_recycler"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingStart="8dp"
-            android:paddingEnd="8dp"
-            android:clipToPadding="false"
-            tools:listitem="@layout/source_header_item" />
+        <androidx.recyclerview.widget.RecyclerView android:id="@+id/source_recycler" android:layout_width="match_parent" android:layout_height="match_parent" android:paddingStart="8dp" android:paddingEnd="8dp" android:paddingTop="178dp" android:clipToPadding="false" tools:listitem="@layout/source_header_item"/>
 
+      <LinearLayout android:layout_width="match_parent" android:layout_height="154dp"
+          android:orientation="vertical" android:layout_gravity="top" android:layout_marginTop="8dp"
+          android:layout_marginStart="12dp" android:layout_marginEnd="12dp"
+          android:paddingStart="18dp" android:paddingEnd="18dp" android:paddingTop="22dp"
+          android:background="@drawable/v23_hero_banner" android:layoutDirection="ltr" android:gravity="left|center_vertical" android:clickable="false" android:focusable="false">
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="@string/v23_browse_title" android:textDirection="locale" android:textStyle="bold" android:textSize="25sp"
+            android:textColor="@color/v22_text" />
+        <TextView android:layout_width="230dp" android:layout_height="wrap_content"
+            android:text="@string/v23_browse_caption" android:textDirection="locale" android:layout_marginTop="6dp"
+            android:maxLines="2" android:textSize="12sp" android:textColor="@color/v22_muted" />
+      </LinearLayout>
     </FrameLayout>
 
     <!-- Adding bottom sheet after main content -->
-    <include layout="@layout/extensions_bottom_sheet"
-        android:id="@+id/bottom_sheet"/>
+    <include layout="@layout/extensions_bottom_sheet" android:id="@+id/bottom_sheet"/>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

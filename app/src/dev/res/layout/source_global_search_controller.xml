@@ -1,25 +1,19 @@
-<?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:background="@drawable/v21_screen_background"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<?xml version='1.0' encoding='UTF-8'?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools" android:background="@drawable/v22_screen_background" android:layout_width="match_parent" android:layout_height="match_parent">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:clipToPadding="false"
-        android:paddingTop="4dp"
-        android:paddingBottom="4dp"
-        tools:listitem="@layout/source_global_search_controller_card" />
+    <androidx.recyclerview.widget.RecyclerView android:id="@+id/recycler" android:layout_width="match_parent" android:layout_height="match_parent" android:clipToPadding="false" android:paddingTop="151dp" android:paddingBottom="4dp" tools:listitem="@layout/source_global_search_controller_card"/>
 
-    <eu.kanade.tachiyomi.widget.EmptyView
-        android:id="@+id/empty_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone"
-        android:gravity="center"
-        tools:visibility="visible" />
+    <LinearLayout android:layout_width="match_parent" android:layout_height="128dp"
+        android:orientation="vertical" android:layout_gravity="top" android:layout_margin="10dp"
+        android:paddingStart="18dp" android:paddingEnd="18dp" android:paddingTop="18dp"
+        android:background="@drawable/v23_hero_banner" android:layoutDirection="ltr" android:gravity="left|center_vertical" android:clickable="false" android:focusable="false">
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="@string/v23_search_title" android:textDirection="locale" android:textStyle="bold" android:textSize="24sp"
+            android:textColor="@color/v22_text" />
+        <TextView android:layout_width="230dp" android:layout_height="wrap_content"
+            android:text="@string/v23_search_caption" android:textDirection="locale" android:textSize="12sp"
+            android:textColor="@color/v22_muted" android:layout_marginTop="7dp" />
+    </LinearLayout>
+    <eu.kanade.tachiyomi.widget.EmptyView android:id="@+id/empty_view" android:layout_width="match_parent" android:layout_height="match_parent" android:visibility="gone" android:gravity="center" tools:visibility="visible"/>
 
 </FrameLayout>
