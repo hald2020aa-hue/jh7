@@ -88,6 +88,8 @@ jobs:
         run: python3 qa/v22/validate_v22.py
       - name: Validate V23 visual reinforcement and preserve engines/preferences
         run: python3 qa/v23/validate_visual_integration.py
+      - name: Validate V24 reader crash guard and browse spacing
+        run: python3 qa/v24/validate_reader_spacing_crash_fix.py
       - name: Run unit tests and compile debug APKs
         run: ./gradlew -Pjh.arm64Only=true --no-daemon testDevDebugUnitTest verifySingleArm64DevApk --stacktrace
       - name: Verify single APK integrity and debug signature

@@ -129,6 +129,9 @@ class BrowseController :
 
     var headerHeight = 0
 
+    // V24: keep the original minimum inset, but adapt to the measured V23 app bar.
+    private var baseSourceTopPadding = 0
+
     var showingExtensions = false
 
     var snackbar: Snackbar? = null
@@ -157,6 +160,7 @@ class BrowseController :
 
     override fun onViewCreated(view: View) {
         super.onViewCreated(view)
+        baseSourceTopPadding = binding.sourceRecycler.paddingTop
         val isReturning = adapter != null
         adapter = SourceAdapter(this)
         // Create binding.sourceRecycler and set adapter.
@@ -177,7 +181,7 @@ class BrowseController :
         scrollViewWith(
             binding.sourceRecycler,
             afterInsets = {
-                headerHeight = binding.sourceRecycler.paddingTop
+                updateSourceTopPadding()
                 binding.sourceRecycler.updatePaddingRelative(
                     bottom = (activityBinding?.bottomNav?.height ?: it.getBottomGestureInsets()) + 58.spToPx,
                 )
@@ -199,10 +203,13 @@ class BrowseController :
                 setBottomPadding()
             },
         )
+        // Recalculate after the expanded app bar has completed its first layout pass.
+        activityBinding?.appBar?.doOnNextLayout { updateSourceTopPadding() }
         if (!isReturning) {
             activityBinding?.appBar?.lockYPos = true
         }
         binding.sourceRecycler.post {
+            updateSourceTopPadding()
             setBottomSheetTabs(
                 if (binding.bottomSheet.root.sheetBehavior
                         .isCollapsed()
@@ -511,6 +518,20 @@ class BrowseController :
                 progress
             )
         )*/
+    }
+
+    /**
+     * Keeps the first source row below the actual expanded app bar.
+     * The XML's 178dp remains the minimum, so smaller headers do not shrink the layout.
+     */
+    private fun updateSourceTopPadding() {
+        val recycler = binding.sourceRecycler
+        val appBarHeight = activityBinding?.appBar?.height ?: 0
+        val targetTop = max(baseSourceTopPadding, appBarHeight + 16.dpToPx)
+        if (recycler.paddingTop != targetTop) {
+            recycler.updatePaddingRelative(top = targetTop)
+        }
+        headerHeight = targetTop
     }
 
     private fun setBottomPadding() {

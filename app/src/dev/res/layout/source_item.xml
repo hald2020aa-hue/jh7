@@ -9,7 +9,7 @@
         <com.google.android.material.textview.MaterialTextView android:id="@+id/close_left" android:layout_width="wrap_content" android:layout_height="match_parent" android:layout_gravity="start|center" android:layout_marginStart="12dp" android:gravity="center" android:text="@string/hide" android:textColor="@color/md_white_1000"/>
     </com.google.android.material.card.MaterialCardView>
 
-    <com.google.android.material.card.MaterialCardView android:id="@+id/source_card" style="@style/Widget.Tachiyomi.CardView.Container" android:layout_width="match_parent" android:layout_height="154dp" android:layout_marginStart="5dp" android:layout_marginTop="5dp" android:layout_marginEnd="5dp" android:layout_marginBottom="5dp" app:cardBackgroundColor="@color/v19_surface" app:cardCornerRadius="19dp" app:cardElevation="3dp" app:strokeColor="@color/v22_stroke_soft" app:strokeWidth="1.2dp">
+    <com.google.android.material.card.MaterialCardView android:id="@+id/source_card" style="@style/Widget.Tachiyomi.CardView.Container" android:layout_width="match_parent" android:layout_height="154dp" android:layout_marginStart="7dp" android:layout_marginTop="7dp" android:layout_marginEnd="7dp" android:layout_marginBottom="7dp" app:cardBackgroundColor="@color/v19_surface" app:cardCornerRadius="19dp" app:cardElevation="3dp" app:strokeColor="@color/v22_stroke_soft" app:strokeWidth="1.2dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout android:id="@+id/card" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@drawable/v22_surface_card">
 
