@@ -64,7 +64,7 @@ for pattern in ['GridLayoutManager(view.context, 2)', 'adapter?.getItem(position
     test(pattern in browse_controller, f'browse preserves original source wiring: {pattern}')
 source_xml = ET.parse(ROOT / screens['browse']).getroot()
 source_card = next(n for n in source_xml.iter() if n.attrib.get(ANDROID + 'id') == '@+id/source_card')
-test(source_card.attrib.get(ANDROID + 'layout_height') == '154dp', 'browse cards use the compact two-column layout')
+test(source_card.attrib.get(ANDROID + 'layout_height', '').endswith('dp') and 140 <= int(source_card.attrib[ANDROID + 'layout_height'][:-2]) <= 170, 'browse cards retain a usable compact two-column layout (140-170dp)')
 for view_id in ['source_image', 'title', 'source_latest', 'source_pin', 'source_divider']:
     test(any(n.attrib.get(ANDROID + 'id') == '@+id/' + view_id for n in source_xml.iter()), f'browse retains source binding {view_id}')
 

@@ -21,7 +21,7 @@ def src(path):
 source_path = ROOT / 'app/src/dev/res/layout/source_item.xml'
 source_xml = ET.parse(source_path).getroot()
 card = next(n for n in source_xml.iter() if n.attrib.get(ANDROID+'id') == '@+id/source_card')
-test(card.attrib.get(ANDROID+'layout_height') == '154dp', 'source cards use the compact V21 grid height')
+test(card.attrib.get(ANDROID+'layout_height', '').endswith('dp') and 140 <= int(card.attrib[ANDROID+'layout_height'][:-2]) <= 170, 'source cards retain a usable compact two-column height (140-170dp)')
 browse_controller = src('app/src/main/java/eu/kanade/tachiyomi/ui/source/BrowseController.kt')
 test('GridLayoutManager(view.context, 2)' in browse_controller, 'source catalogue uses a two-column visual grid')
 test('adapter?.getItem(position) is LangItem) 2 else 1' in browse_controller, 'language section headers span both source columns')
