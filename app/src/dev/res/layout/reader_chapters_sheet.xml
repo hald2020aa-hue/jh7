@@ -3,7 +3,7 @@
 
     <FrameLayout android:id="@+id/topbar_layout" android:layout_width="match_parent" android:layout_height="?attr/actionBarSize" android:clickable="true" android:focusable="false" android:descendantFocusability="afterDescendants" android:background="@drawable/v22_reader_panel">
 
-        <ImageView android:id="@+id/pill" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="5dp" android:alpha="0.25" android:contentDescription="@string/drag_handle" android:src="@drawable/draggable_pill" android:layout_gravity="top|center" app:tint="?actionBarTintColor" android:background="@drawable/v22_neon_chip"/>
+        <ImageView android:id="@+id/pill" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:alpha="0.25" android:contentDescription="@string/drag_handle" android:src="@drawable/draggable_pill" android:layout_gravity="top|center" app:tint="?actionBarTintColor" android:background="@drawable/v22_neon_chip"/>
 
         <LinearLayout android:id="@+id/buttonGroup" android:layout_width="match_parent" android:layout_height="wrap_content" android:spacing="0dp" android:orientation="horizontal">
         <com.google.android.material.button.MaterialButton android:id="@+id/chapters_button" style="@style/Widget.Tachiyomi.Button.ReaderIcon" app:icon="@drawable/ic_format_list_numbered_24dp" android:contentDescription="@string/view_chapters" android:tooltipText="@string/view_chapters"/>
