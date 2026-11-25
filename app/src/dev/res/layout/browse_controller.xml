@@ -7,7 +7,7 @@
 
       <LinearLayout android:layout_width="match_parent" android:layout_height="154dp"
           android:orientation="vertical" android:layout_gravity="top" android:layout_marginTop="8dp"
-          android:layout_marginStart="12dp" android:layout_marginEnd="12dp"
+          android:layout_marginStart="10dp" android:layout_marginEnd="10dp"
           android:paddingStart="18dp" android:paddingEnd="18dp" android:paddingTop="22dp"
           android:background="@drawable/v23_hero_banner" android:layoutDirection="ltr" android:gravity="left|center_vertical" android:clickable="false" android:focusable="false">
         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"

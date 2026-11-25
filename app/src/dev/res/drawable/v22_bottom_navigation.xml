@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-  <item><shape android:shape="rectangle"><gradient android:angle="0" android:startColor="#D236E6FF" android:centerColor="#999A4DFF" android:endColor="#D7FC39ED" /><corners android:radius="26dp" /></shape></item>
-  <item android:left="1dp" android:top="1dp" android:right="1dp" android:bottom="1dp"><shape android:shape="rectangle"><gradient android:angle="0" android:startColor="#111F42" android:centerColor="#10162B" android:endColor="#2B123F" /><corners android:radius="25dp" /></shape></item>
+  <item><shape android:shape="rectangle"><gradient android:angle="0" android:startColor="#66FF8068" android:centerColor="#B45E91" android:endColor="#88FFB05F" /><corners android:radius="18dp" /></shape></item>
+  <item android:left="1dp" android:top="1dp" android:right="1dp" android:bottom="1dp"><shape android:shape="rectangle"><gradient android:angle="0" android:startColor="#21151A" android:centerColor="#10090B" android:endColor="#442934" /><corners android:radius="18dp" /></shape></item>
 </layer-list>

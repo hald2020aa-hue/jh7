@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-  <item><shape android:shape="rectangle"><gradient android:angle="0" android:startColor="#0A1734" android:centerColor="#0B1028" android:endColor="#180A2A"/></shape></item>
+  <item><shape android:shape="rectangle"><gradient android:angle="0" android:startColor="#281218" android:centerColor="#281218" android:endColor="#281218"/></shape></item>
   <item><bitmap android:src="@drawable/v23_brand_strip" android:gravity="fill" /></item>
-  <item><shape android:shape="rectangle"><gradient android:angle="0" android:startColor="#AA050817" android:centerColor="#92070A1A" android:endColor="#B50C0920"/></shape></item>
+  <item><shape android:shape="rectangle"><gradient android:angle="0" android:startColor="#10090B" android:centerColor="#10090B" android:endColor="#10090B"/></shape></item>
   <!-- V24 crash guard: ReaderActivity toggles these IDs in onPrepareOptionsMenu.
        Transparent layers preserve the existing V23 header artwork. -->
   <item android:id="@+id/layer_full_width" android:drawable="@android:color/transparent" />
